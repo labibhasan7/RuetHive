@@ -117,40 +117,45 @@ class _CalendarCell extends StatelessWidget {
             ? BorderSide(color: scheme.primary.withValues(alpha: 0.5), width: 1.5)
             : BorderSide.none,
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.sm),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              day.toString(),
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: isSelected
-                    ? scheme.onPrimaryContainer
-                    : scheme.onSurface,
+      child: ClipRect(
+        child: Padding(
+          padding: const EdgeInsets.all(4),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                day.toString(),
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: isSelected
+                      ? scheme.onPrimaryContainer
+                      : scheme.onSurface,
+                ),
               ),
-            ),
-            const Spacer(),
-            if (hasSchedule || hasNotice)
-              Row(
-                children: [
-                  if (hasSchedule) _dot(scheme.primary),
-                  if (hasSchedule && hasNotice) const SizedBox(width: 4),
-                  if (hasNotice) _dot(scheme.secondary),
-                ],
-              ),
-          ],
+              if (hasSchedule || hasNotice) ...[
+                const SizedBox(height: 2),
+                Row(
+                  children: [
+                    if (hasSchedule) _dot(scheme.primary),
+                    if (hasSchedule && hasNotice) const SizedBox(width: 2),
+                    if (hasNotice) _dot(scheme.secondary),
+                  ],
+                ),
+              ],
+            ],
+          ),
         ),
       ),
-    );
 
+    );
   }
 
   Widget _dot(Color color) {
     return Container(
-      width: 8,
-      height: 8,
+      width: 6,
+      height: 6,
       decoration: BoxDecoration(color: color, shape: BoxShape.circle),
     );
   }
