@@ -17,7 +17,7 @@ class _AdminUserManagementScreenState
   String _roleFilter = 'All';
   final _searchCtrl = TextEditingController();
 
-  List<Map<String, dynamic>> _users = [
+   final List<Map<String, dynamic>> _users = [
     {
       'name': 'Dipannita Biswas',
       'id': '2303030',
