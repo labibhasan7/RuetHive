@@ -96,7 +96,7 @@ class _AdminUserManagementScreenState
 
     return Column(
       children: [
-        // ── Search + Add User button ──────────────────────
+        //  Search + Add User button --------
         Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(
@@ -126,7 +126,7 @@ class _AdminUserManagementScreenState
           ),
         ),
 
-        // ── Role filter chips ─────────────────────────────
+        // Role filter chips--------------
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           padding:
@@ -147,7 +147,7 @@ class _AdminUserManagementScreenState
           ),
         ),
 
-        // ── Count row ────────────────────────────────────
+        //  Count row --------
         Padding(
           padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.md, vertical: AppSpacing.xs),
@@ -161,7 +161,7 @@ class _AdminUserManagementScreenState
           ),
         ),
 
-        // ── List ─────────────────────────────────────────
+        //  List --------------
         Expanded(
           child: _isLoading
               ? const Padding(
@@ -248,7 +248,7 @@ class _AdminUserManagementScreenState
   }
 }
 
-// ── User card ─────────────────────────────────────────────────────
+//  User card ------------
 class _UserCard extends StatelessWidget {
   final Map<String, dynamic> user;
   final ColorScheme colorScheme;
@@ -263,9 +263,9 @@ class _UserCard extends StatelessWidget {
   Color get _roleBadgeColor {
     switch (user['role']) {
       case 'CR':
-        return Colors.green;
+        return Colors.lightGreen;
       case 'Admin':
-        return Colors.purple;
+        return Colors.purpleAccent;
       default:
         return colorScheme.primary;
     }
@@ -291,7 +291,7 @@ class _UserCard extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.md),
         child: Row(
           children: [
-            // ── Avatar ─────────────────────────────────
+            //  Avatar ----------------
             CircleAvatar(
               radius: 28,
               backgroundColor: colorScheme.primaryContainer,
@@ -309,7 +309,7 @@ class _UserCard extends StatelessWidget {
             ),
             const SizedBox(width: AppSpacing.md),
 
-            // ── Details ────────────────────────────────
+            //  Details ---------------
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,7 +353,7 @@ class _UserCard extends StatelessWidget {
               ),
             ),
 
-            // ── Actions menu ───────────────────────────
+            //Actions menu--------
             PopupMenuButton<String>(
               onSelected: (action) {
                 if (action == 'delete') {

@@ -79,7 +79,7 @@ class _AdminScheduleManagementScreenState
     return matchStatus && matchSection && matchSearch;
   }).toList();
 
-  // ── Actions ──────────────────────────────────────────────────
+  //  Actions
 
   void _approve(Map<String, dynamic> schedule) {
     setState(() => schedule['status'] = 'ACTIVE');
@@ -143,7 +143,7 @@ class _AdminScheduleManagementScreenState
 
     return Column(
       children: [
-        // ── Search bar ────────────────────────────────────
+        // Search bar -------------
         Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
           child: TextField(
@@ -159,7 +159,7 @@ class _AdminScheduleManagementScreenState
           ),
         ),
 
-        // ── Filter chips ──────────────────────────────────
+        //  Filter chips -----------
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -190,7 +190,7 @@ class _AdminScheduleManagementScreenState
         ),
         const SizedBox(height: AppSpacing.sm),
 
-        // ── Count + Add button ────────────────────────────
+        //  Count + Add button--------
         Padding(
           padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.md, vertical: AppSpacing.xs),
@@ -213,7 +213,7 @@ class _AdminScheduleManagementScreenState
           ),
         ),
 
-        // ── List ──────────────────────────────────────────
+        // List --------------
         Expanded(
           child: _isLoading
               ? const Padding(
@@ -244,7 +244,7 @@ class _AdminScheduleManagementScreenState
   }
 }
 
-// ── Schedule card ─────────────────────────────────────────────────
+// --------- Schedule card -----------
 class _ScheduleCard extends StatelessWidget {
   final Map<String, dynamic> schedule;
   final ColorScheme colorScheme;
@@ -358,7 +358,7 @@ class _ScheduleCard extends StatelessWidget {
   }
 }
 
-// ── Shared badge pill ─────────────────────────────────────────────
+//  Shared badge pill---
 class _Badge extends StatelessWidget {
   final String label;
   final Color color;

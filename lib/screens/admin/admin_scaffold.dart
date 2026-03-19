@@ -15,7 +15,7 @@ import 'management/admin_schedule_management_screen.dart';
 import 'management/admin_notice_management_screen.dart';
 import 'management/admin_user_management_screen.dart';
 
-// ─── Admin Nav State ──────────────────────────────────────────
+//  Admin Nav State
 class AdminNavState {
   final int currentIndex;
   AdminNavState(this.currentIndex);
@@ -30,7 +30,7 @@ final adminNavProvider =
 StateNotifierProvider<AdminNavNotifier, AdminNavState>(
         (ref) => AdminNavNotifier());
 
-// ─── Admin Scaffold ───────────────────────────────────────────
+//  Admin Scaffold
 class AdminScaffold extends ConsumerWidget {
   const AdminScaffold({super.key});
 
@@ -38,7 +38,7 @@ class AdminScaffold extends ConsumerWidget {
     SideNavItem(icon: Icons.admin_panel_settings_rounded, label: 'Dashboard'),
     SideNavItem(icon: Icons.event_note_rounded,           label: 'Schedules'),
     SideNavItem(icon: Icons.campaign_rounded,             label: 'Notices'),
-    SideNavItem(icon: Icons.group_rounded,                label: 'Users'),
+    SideNavItem(icon: Icons.groups_rounded,                label: 'Users'),
     SideNavItem(icon: Icons.person_rounded,               label: 'Profile'),
   ];
 
@@ -67,7 +67,7 @@ class AdminScaffold extends ConsumerWidget {
     return Responsive.builder(
       context: context,
 
-      // ── Mobile ──────────────────────────────────────
+      //  Mobile ----------------
       mobile: Scaffold(
         body: Column(
           children: [
@@ -94,7 +94,7 @@ class AdminScaffold extends ConsumerWidget {
             NavigationDestination(
                 icon: Icon(Icons.campaign_rounded), label: 'Notices'),
             NavigationDestination(
-                icon: Icon(Icons.group_rounded), label: 'Users'),
+                icon: Icon(Icons.groups_rounded), label: 'Users'),
             NavigationDestination(
                 icon: Icon(Icons.person_rounded), label: 'Profile'),
           ],
@@ -102,7 +102,7 @@ class AdminScaffold extends ConsumerWidget {
         floatingActionButton: _QuickActionFAB(),
       ),
 
-      // ── Desktop ─────────────────────────────────────
+      //  Desktop -------------------
       desktop: Builder(builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
 
@@ -156,7 +156,7 @@ class AdminScaffold extends ConsumerWidget {
   }
 }
 
-// ─── Quick Action FAB + bottom sheet ─────────────────────────────
+// Quick Action FAB + bottom sheet
 class _QuickActionFAB extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

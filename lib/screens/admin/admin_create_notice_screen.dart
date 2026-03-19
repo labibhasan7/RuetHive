@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../core/ui/spacing.dart';
 
-// ── Attachment helpers (same pattern as CR notice screen) ────────
+// Attachment helpers (same pattern as CR notice screen)
 class _AttachmentType {
   final String label;
   final IconData icon;
@@ -38,9 +38,8 @@ class _Attachment {
   }
 }
 
-// ────────────────────────────────────────────────────────────────
 // ADMIN CREATE NOTICE SCREEN
-// ────────────────────────────────────────────────────────────────
+
 class AdminCreateNoticeScreen extends StatefulWidget {
   const AdminCreateNoticeScreen({super.key});
 
@@ -55,7 +54,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
   final _bodyCtrl = TextEditingController();
 
   // Admin can target much wider audiences than a CR
-  String _scope = 'department'; // 'section' | 'batch' | 'department' | 'university'
+  String _scope = 'department';
   String _selectedSection = 'A';
   String _selectedBatch = '23';
   bool _isUrgent = false;
@@ -102,7 +101,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
     super.dispose();
   }
 
-  // ── Scope label shown in the audience summary banner ─────────
+  //  Scope label shown in the audience summary banner ---------
   String get _audienceLabel {
     switch (_scope) {
       case 'section':
@@ -118,7 +117,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
     }
   }
 
-  // ── File picking ─────────────────────────────────────────────
+  //  File picking------------
   Future<void> _pickFile(_AttachmentType type) async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -331,7 +330,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
           children: [
-            // ── Audience summary banner ──────────────────────
+            //  Audience summary banner-----------
             AnimatedContainer(
               duration: const Duration(milliseconds: 250),
               padding: const EdgeInsets.all(AppSpacing.md),
@@ -372,7 +371,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
             ),
             const SizedBox(height: AppSpacing.lg),
 
-            // ── Scope selector ───────────────────────────────
+            //  Scope selector -------------
             Text(
               'Post To',
               style: TextStyle(
@@ -393,7 +392,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
               ],
             ),
 
-            // ── Section / Batch pickers (conditional) ────────
+            //  Section / Batch pickers (conditional) ------
             if (_scope == 'section' || _scope == 'batch') ...[
               const SizedBox(height: AppSpacing.md),
               Row(
@@ -467,7 +466,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
             ],
             const SizedBox(height: AppSpacing.md),
 
-            // ── Urgent toggle ────────────────────────────────
+            //  Urgent toggle ------------
             Container(
               decoration: BoxDecoration(
                 border: Border.all(
@@ -491,7 +490,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
             ),
             const SizedBox(height: AppSpacing.lg),
 
-            // ── Title ────────────────────────────────────────
+            // Title -----------
             TextFormField(
               controller: _titleCtrl,
               decoration: InputDecoration(
@@ -506,7 +505,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
 
-            // ── Body ─────────────────────────────────────────
+            //  Body -----------
             TextFormField(
               controller: _bodyCtrl,
               maxLines: 6,
@@ -523,7 +522,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
             ),
             const SizedBox(height: AppSpacing.lg),
 
-            // ── Attachments section ──────────────────────────
+            //  Attachments section -------------
             Row(
               children: [
                 Text(
@@ -610,7 +609,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
               ),
             ),
 
-            // ── Attached files list ──────────────────────────
+            //  Attached files list-------------
             if (_attachments.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.md),
               ..._attachments.asMap().entries.map((entry) {
@@ -705,7 +704,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
 
             const SizedBox(height: AppSpacing.xl),
 
-            // ── Submit button ────────────────────────────────
+            // Submit button ----------------
             FilledButton(
               onPressed: _isSubmitting ? null : _submit,
               style: FilledButton.styleFrom(

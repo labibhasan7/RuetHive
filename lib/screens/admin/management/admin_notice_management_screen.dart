@@ -69,8 +69,6 @@ class _AdminNoticeManagementScreenState
     return matchFilter && matchSearch;
   }).toList();
 
-  // ── Actions ──────────────────────────────────────────────────
-
   void _approve(Map<String, dynamic> notice) {
     setState(() => notice['status'] = 'ACTIVE');
     _snack('✅ Notice approved', Colors.green);
@@ -133,7 +131,7 @@ class _AdminNoticeManagementScreenState
 
     return Column(
       children: [
-        // ── Search + Post button ──────────────────────────
+        //  Search + Post button --------
         Padding(
           padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(
@@ -166,7 +164,7 @@ class _AdminNoticeManagementScreenState
           ),
         ),
 
-        // ── Filter chips ──────────────────────────────────
+        //  Filter chips----------
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -192,7 +190,7 @@ class _AdminNoticeManagementScreenState
         ),
         const SizedBox(height: AppSpacing.sm),
 
-        // ── List ──────────────────────────────────────────
+        //  List ----------
         Expanded(
           child: _isLoading
               ? const Padding(
@@ -224,7 +222,7 @@ class _AdminNoticeManagementScreenState
   }
 }
 
-// ── Notice card ───────────────────────────────────────────────────
+// ----------- Notice card -----------
 class _NoticeCard extends StatelessWidget {
   final Map<String, dynamic> notice;
   final ColorScheme colorScheme;

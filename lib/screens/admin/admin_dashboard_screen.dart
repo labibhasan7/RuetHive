@@ -142,7 +142,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     );
   }
 
-  // ─── Header ───────────────────────────────────────────────
+  //  Header ------------
   Widget _buildHeader(ColorScheme colorScheme) {
     return Container(
       decoration: BoxDecoration(
@@ -200,7 +200,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     );
   }
 
-  // ─── Stats Grid ───────────────────────────────────────────
+  //  Stats Grid -----------
   Widget _buildStatsGrid(ColorScheme colorScheme) {
     final stats = [
       {
@@ -311,7 +311,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     );
   }
 
-  // ─── Pending Approvals ────────────────────────────────────
+  //  Pending Approvals ---------------
   Widget _buildPendingSection(BuildContext context, ColorScheme colorScheme) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -457,7 +457,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
     );
   }
 
-  // ─── Activity Feed ────────────────────────────────────────
+  // Activity Feed ---------------
   Widget _buildActivityFeed(ColorScheme colorScheme) {
     final activities = [
       {
