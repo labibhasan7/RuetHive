@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-//import '../../core/constants.dart';
 import '../../core/responsive/responsive.dart';
 import '../../core/state/theme_provider.dart';
 import '../../core/state/user_provider.dart';
@@ -15,7 +14,7 @@ import '../../widgets/scaffold/base_side_nav.dart';
 import 'cr_management_screen.dart';
 import 'cr_create_schedule_screen.dart';
 
-// ─── CR Navigation State ──────────────────────────────────────
+// CR Navigation State
 class CRNavState {
   final int currentIndex;
   CRNavState(this.currentIndex);
@@ -29,7 +28,7 @@ class CRNavNotifier extends StateNotifier<CRNavState> {
 final crNavProvider =
 StateNotifierProvider<CRNavNotifier, CRNavState>((ref) => CRNavNotifier());
 
-// ─── CR Scaffold ─────────────────────────────────────────────
+//  CR Scaffold
 class CRScaffold extends ConsumerWidget {
   const CRScaffold({super.key});
 
@@ -60,7 +59,7 @@ class CRScaffold extends ConsumerWidget {
     return Responsive.builder(
       context: context,
 
-      // ── Mobile ──────────────────────────────────────
+      //  Mobile
       mobile: Scaffold(
         body: Column(
           children: [
@@ -93,7 +92,7 @@ class CRScaffold extends ConsumerWidget {
         floatingActionButton: _QuickPostFAB(),
       ),
 
-      // ── Desktop ─────────────────────────────────────
+      //  Desktop
       desktop: Builder(builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
 
@@ -101,7 +100,6 @@ class CRScaffold extends ConsumerWidget {
           body: Row(
             children: [
               BaseSideNav(
-                logoEmoji: '📚',
                 portalLabel: 'CR Portal',
                 items: _navItems,
                 selectedIndex: navState.currentIndex,
@@ -149,7 +147,7 @@ class CRScaffold extends ConsumerWidget {
   }
 }
 
-// ─── Quick Post FAB + bottom sheet ───────────────────────────────
+//  Quick Post FAB + bottom sheet
 class _QuickPostFAB extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

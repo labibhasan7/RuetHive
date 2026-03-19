@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-//import '../core/constants.dart';
 import '../core/responsive/responsive.dart';
 import '../core/state/navigation_provider.dart';
 import '../core/state/theme_provider.dart';
@@ -45,7 +44,7 @@ class AppScaffold extends ConsumerWidget {
     return Responsive.builder(
       context: context,
 
-      // ── Mobile ──────────────────────────────────────
+      //  Mobile
       mobile: Scaffold(
         body: Column(
           children: [
@@ -69,7 +68,7 @@ class AppScaffold extends ConsumerWidget {
         ),
       ),
 
-      // ── Desktop ─────────────────────────────────────
+      //  Desktop
       desktop: Builder(builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
 
@@ -77,7 +76,6 @@ class AppScaffold extends ConsumerWidget {
           body: Row(
             children: [
               BaseSideNav(
-                logoEmoji: '📚',
                 portalLabel: _portalLabel,
                 items: _navItems,
                 selectedIndex: navState.currentIndex,

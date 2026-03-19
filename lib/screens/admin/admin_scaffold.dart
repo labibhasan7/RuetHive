@@ -110,7 +110,6 @@ class AdminScaffold extends ConsumerWidget {
           body: Row(
             children: [
               BaseSideNav(
-                logoEmoji: '🛡️',
                 portalLabel: 'Admin Panel',
                 items: _navItems,
                 selectedIndex: navState.currentIndex,

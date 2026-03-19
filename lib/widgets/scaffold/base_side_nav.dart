@@ -10,18 +10,8 @@ class SideNavItem {
   const SideNavItem({required this.icon, required this.label});
 }
 
-/// Shared desktop sidebar used by all three role scaffolds.
-///
-/// Callers supply:
-/// - [logoEmoji]     — emoji shown in the logo box (e.g. '📚', '🛡️')
-/// - [portalLabel]   — short role badge below the app name (e.g. 'CR Portal')
-/// - [items]         — ordered list of [SideNavItem]
-/// - [selectedIndex] — currently active item index
-/// - [onSelect]      — called with the tapped index
-/// - [isDarkMode]    — drives theme toggle icon + label
-/// - [onToggleTheme] — called when theme row is tapped
+
 class BaseSideNav extends StatelessWidget {
-  final String logoEmoji;
   final String portalLabel;
   final List<SideNavItem> items;
   final int selectedIndex;
@@ -31,7 +21,6 @@ class BaseSideNav extends StatelessWidget {
 
   const BaseSideNav({
     super.key,
-    required this.logoEmoji,
     required this.portalLabel,
     required this.items,
     required this.selectedIndex,
@@ -55,16 +44,15 @@ class BaseSideNav extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // ── Logo row ─────────────────────────────────
+          //  Logo row
           _LogoRow(
-            emoji: logoEmoji,
             portalLabel: portalLabel,
             colorScheme: colorScheme,
           ),
 
           const Divider(height: 1),
 
-          // ── Nav items ─────────────────────────────────
+          // Nav items
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.all(AppSpacing.sm),
@@ -78,7 +66,7 @@ class BaseSideNav extends StatelessWidget {
             ),
           ),
 
-          // ── Theme toggle ──────────────────────────────
+          //  Theme toggle
           _ThemeToggleRow(
             isDarkMode: isDarkMode,
             onToggle: onToggleTheme,
@@ -90,14 +78,12 @@ class BaseSideNav extends StatelessWidget {
   }
 }
 
-// ── Logo row ──────────────────────────────────────────────────────
+//  Logo row
 class _LogoRow extends StatelessWidget {
-  final String emoji;
   final String portalLabel;
   final ColorScheme colorScheme;
 
   const _LogoRow({
-    required this.emoji,
     required this.portalLabel,
     required this.colorScheme,
   });
@@ -108,15 +94,14 @@ class _LogoRow extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       child: Row(
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: colorScheme.primary,
-              borderRadius: BorderRadius.circular(AppConstants.radiusSM),
-            ),
-            child: Center(
-              child: Text(emoji, style: const TextStyle(fontSize: 24)),
+          // Logo image
+          ClipRRect(
+            borderRadius: BorderRadius.circular(AppConstants.radiusSM),
+            child: Image.asset(
+              'asset/images/logo.png',
+              width: 48,
+              height: 48,
+              fit: BoxFit.cover,
             ),
           ),
           const SizedBox(width: AppSpacing.sm),
@@ -153,7 +138,7 @@ class _LogoRow extends StatelessWidget {
   }
 }
 
-// ── Single nav item ───────────────────────────────────────────────
+//  Single nav item
 class _NavItem extends StatelessWidget {
   final SideNavItem item;
   final bool isSelected;
@@ -240,7 +225,7 @@ class _NavItem extends StatelessWidget {
   }
 }
 
-// ── Theme toggle row ──────────────────────────────────────────────
+//  Theme toggle row
 class _ThemeToggleRow extends StatelessWidget {
   final bool isDarkMode;
   final VoidCallback onToggle;
