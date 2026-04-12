@@ -101,10 +101,14 @@ lib/
 │   │   ├── app_theme.dart       # AppTheme.light(role) / .dark(role)
 │   │   ├── role_colours.dart    # Seed colour per role (blue / green / purple)
 │   │   └── typography.dart      # 5 named text styles built from active ColorScheme
-│   └── ui/
-│       ├── shadows.dart         # AppShadows.card / .floating / .subtle
-│       └── spacing.dart         # AppSpacing.xs/sm/md/lg/xl/xxl (4pt base grid)
-│
+│   ├── ui/
+│   │   ├── shadows.dart         # AppShadows.card / .floating / .subtle
+│   │   ├── spacing.dart         # AppSpacing.xs/sm/md/lg/xl/xxl (4pt base grid)
+│   │   └── animations.dart      # AppAnimations.duration(ms)
+│   └── utils/
+│       ├── date_utils.ext.dart  # Extension methods for DateTime
+│       └── validators.dart      # Validators for forms
+│     
 ├── data/
 │   └── dummy_data.dart          # Stub data — replace with Firestore StreamProviders
 │
