@@ -164,7 +164,7 @@ final List<ScheduleItem> fullSchedule = [
 
 /// NOTICES DATA (UPDATED)
 
-final _now = DateTime.now();
+//final _now = DateTime.now();
 
 final List<NoticeItem> notices = [
   NoticeItem(

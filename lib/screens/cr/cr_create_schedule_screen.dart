@@ -4,9 +4,8 @@ import 'package:file_picker/file_picker.dart';
 import '../../core/state/user_provider.dart';
 import '../../core/ui/spacing.dart';
 
-// ────────────────────────────────────────────────────────────────
 // CR CREATE SCHEDULE SCREEN
-// ────────────────────────────────────────────────────────────────
+
 class CRCreateScheduleScreen extends ConsumerStatefulWidget {
   const CRCreateScheduleScreen({super.key});
 
@@ -304,9 +303,7 @@ class _CRCreateScheduleScreenState
   }
 }
 
-// ────────────────────────────────────────────────────────────────
 // CR CREATE NOTICE SCREEN
-// ────────────────────────────────────────────────────────────────
 
 // Supported attachment types with metadata
 class _AttachmentType {
@@ -360,7 +357,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
   bool _isSubmitting = false;
   final List<_Attachment> _attachments = [];
 
-  // ── Attachment type definitions ──────────────────────────────
+  // Attachment type definitions
   static const _attachmentTypes = [
     _AttachmentType(
       label: 'Image',
@@ -401,7 +398,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
     super.dispose();
   }
 
-  // ── Pick file of a specific type ─────────────────────────────
+  //  Pick file of a specific type
   Future<void> _pickFile(_AttachmentType type) async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -434,7 +431,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
     }
   }
 
-  // ── Show bottom sheet to choose attachment type ───────────────
+  //  Show bottom sheet to choose attachment type
   void _showAttachmentPicker() {
     showModalBottomSheet(
       context: context,
@@ -523,7 +520,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
     );
   }
 
-  // ── Get icon & color for a file extension ────────────────────
+  // Get icon & color for a file extensions
   ({IconData icon, Color color}) _fileStyle(String ext) {
     final lower = ext.toLowerCase();
     if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'heic'].contains(lower)) {
@@ -588,7 +585,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
           children: [
-            // ── Info banner ──────────────────────────────────
+            // Info banner
             Container(
               padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
@@ -612,7 +609,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
             ),
             const SizedBox(height: AppSpacing.lg),
 
-            // ── Scope selector ───────────────────────────────
+            //  Scope selector
             Text('Scope',
                 style: TextStyle(
                     fontWeight: FontWeight.w600,
@@ -640,7 +637,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
 
-            // ── Urgent toggle ────────────────────────────────
+            //  Urgent toggle
             Container(
               decoration: BoxDecoration(
                 border: Border.all(
@@ -663,7 +660,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
             ),
             const SizedBox(height: AppSpacing.lg),
 
-            // ── Title ────────────────────────────────────────
+            //  Title
             TextFormField(
               controller: _titleCtrl,
               decoration: InputDecoration(
@@ -678,7 +675,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
 
-            // ── Body ─────────────────────────────────────────
+            //  Body
             TextFormField(
               controller: _bodyCtrl,
               maxLines: 6,
@@ -695,7 +692,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
             ),
             const SizedBox(height: AppSpacing.lg),
 
-            // ── Attachments section ──────────────────────────
+            //  Attachments section
             Row(
               children: [
                 Text(
@@ -786,7 +783,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
               ),
             ),
 
-            // ── Attached files list ──────────────────────────
+            // Attached files list
             if (_attachments.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.md),
               ..._attachments.asMap().entries.map((entry) {
@@ -888,7 +885,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
 
             const SizedBox(height: AppSpacing.xl),
 
-            // ── Submit button ────────────────────────────────
+            // Submit button
             FilledButton(
               onPressed: _isSubmitting ? null : _submit,
               style: FilledButton.styleFrom(

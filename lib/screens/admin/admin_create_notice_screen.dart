@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../core/ui/spacing.dart';
+import '../../core/utils/validators.dart';
 
-// Attachment helpers (same pattern as CR notice screen)
+// ATTACHMENT HELPERS
 class _AttachmentType {
   final String label;
   final IconData icon;
@@ -39,7 +40,6 @@ class _Attachment {
 }
 
 // ADMIN CREATE NOTICE SCREEN
-
 class AdminCreateNoticeScreen extends StatefulWidget {
   const AdminCreateNoticeScreen({super.key});
 
@@ -49,16 +49,15 @@ class AdminCreateNoticeScreen extends StatefulWidget {
 }
 
 class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _titleCtrl = TextEditingController();
-  final _bodyCtrl = TextEditingController();
+  final _formKey    = GlobalKey<FormState>();
+  final _titleCtrl  = TextEditingController();
+  final _bodyCtrl   = TextEditingController();
 
-  // Admin can target much wider audiences than a CR
-  String _scope = 'department';
+  String _scope           = 'department';
   String _selectedSection = 'A';
-  String _selectedBatch = '23';
-  bool _isUrgent = false;
-  bool _isSubmitting = false;
+  String _selectedBatch   = '23';
+  bool _isUrgent          = false;
+  bool _isSubmitting      = false;
   final List<_Attachment> _attachments = [];
 
   static const _attachmentTypes = [
@@ -101,7 +100,8 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
     super.dispose();
   }
 
-  //  Scope label shown in the audience summary banner ---------
+  // Audience label
+
   String get _audienceLabel {
     switch (_scope) {
       case 'section':
@@ -117,7 +117,8 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
     }
   }
 
-  //  File picking------------
+  //File picking
+
   Future<void> _pickFile(_AttachmentType type) async {
     try {
       final result = await FilePicker.platform.pickFiles(
@@ -265,6 +266,8 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
     );
   }
 
+  // Submit
+
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _isSubmitting = true);
@@ -276,7 +279,8 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
             content: Text(
               _attachments.isEmpty
                   ? 'Notice posted successfully!'
-                  : 'Notice posted with ${_attachments.length} attachment${_attachments.length > 1 ? 's' : ''}!',
+                  : 'Notice posted with ${_attachments.length} '
+                  'attachment${_attachments.length > 1 ? 's' : ''}!',
             ),
             backgroundColor: Colors.green,
           ),
@@ -296,6 +300,8 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
       if (mounted) setState(() => _isSubmitting = false);
     }
   }
+
+  // Build
 
   @override
   Widget build(BuildContext context) {
@@ -330,7 +336,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
         child: ListView(
           padding: const EdgeInsets.all(AppSpacing.md),
           children: [
-            //  Audience summary banner-----------
+            // Audience summary banner
             AnimatedContainer(
               duration: const Duration(milliseconds: 250),
               padding: const EdgeInsets.all(AppSpacing.md),
@@ -371,7 +377,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
             ),
             const SizedBox(height: AppSpacing.lg),
 
-            //  Scope selector -------------
+            // Scope selector
             Text(
               'Post To',
               style: TextStyle(
@@ -381,23 +387,25 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
               ),
             ),
             const SizedBox(height: AppSpacing.sm),
-            // Scope chips
             Wrap(
               spacing: AppSpacing.sm,
               children: [
-                _scopeChip('section', 'Specific Section', Icons.person_rounded, colorScheme),
-                _scopeChip('batch', 'Entire Batch', Icons.groups_rounded, colorScheme),
-                _scopeChip('department', 'Department', Icons.school_rounded, colorScheme),
-                _scopeChip('university', 'University-Wide', Icons.account_balance_rounded, colorScheme),
+                _scopeChip('section', 'Specific Section',
+                    Icons.person_rounded, colorScheme),
+                _scopeChip('batch', 'Entire Batch',
+                    Icons.groups_rounded, colorScheme),
+                _scopeChip('department', 'Department',
+                    Icons.school_rounded, colorScheme),
+                _scopeChip('university', 'University-Wide',
+                    Icons.account_balance_rounded, colorScheme),
               ],
             ),
 
-            //  Section / Batch pickers (conditional) ------
+            // Section / Batch pickers
             if (_scope == 'section' || _scope == 'batch') ...[
               const SizedBox(height: AppSpacing.md),
               Row(
                 children: [
-                  // Batch picker
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -429,7 +437,6 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
                       ],
                     ),
                   ),
-                  // Section picker (only when scope == section)
                   if (_scope == 'section') ...[
                     const SizedBox(width: AppSpacing.md),
                     Expanded(
@@ -466,7 +473,7 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
             ],
             const SizedBox(height: AppSpacing.md),
 
-            //  Urgent toggle ------------
+            // Urgent toggle
             Container(
               decoration: BoxDecoration(
                 border: Border.all(
@@ -483,14 +490,15 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
                     'Urgent notices appear at the top with a red badge'),
                 secondary: Icon(
                   Icons.warning_rounded,
-                  color:
-                  _isUrgent ? Colors.red : colorScheme.onSurfaceVariant,
+                  color: _isUrgent
+                      ? Colors.red
+                      : colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
             const SizedBox(height: AppSpacing.lg),
 
-            // Title -----------
+            // Title
             TextFormField(
               controller: _titleCtrl,
               decoration: InputDecoration(
@@ -499,13 +507,11 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12)),
               ),
-              validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'Title is required'
-                  : null,
+              validator: (v) => AppValidators.title(v),
             ),
             const SizedBox(height: AppSpacing.md),
 
-            //  Body -----------
+            // Body
             TextFormField(
               controller: _bodyCtrl,
               maxLines: 6,
@@ -516,13 +522,11 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12)),
               ),
-              validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'Body is required'
-                  : null,
+              validator: (v) => AppValidators.bodyText(v),
             ),
             const SizedBox(height: AppSpacing.lg),
 
-            //  Attachments section -------------
+            // Attachments header
             Row(
               children: [
                 Text(
@@ -555,7 +559,8 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
                 Text(
                   'Optional',
                   style: TextStyle(
-                      fontSize: 12, color: colorScheme.onSurfaceVariant),
+                      fontSize: 12,
+                      color: colorScheme.onSurfaceVariant),
                 ),
               ],
             ),
@@ -609,16 +614,17 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
               ),
             ),
 
-            //  Attached files list-------------
+            // Attached files list
             if (_attachments.isNotEmpty) ...[
               const SizedBox(height: AppSpacing.md),
               ..._attachments.asMap().entries.map((entry) {
-                final i = entry.key;
+                final i   = entry.key;
                 final att = entry.value;
                 final style = _fileStyle(att.extension);
 
                 return Container(
-                  margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  margin:
+                  const EdgeInsets.only(bottom: AppSpacing.sm),
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.md,
                     vertical: AppSpacing.sm,
@@ -687,8 +693,8 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
                         ),
                       const SizedBox(width: AppSpacing.sm),
                       IconButton(
-                        onPressed: () =>
-                            setState(() => _attachments.removeAt(i)),
+                        onPressed: () => setState(
+                                () => _attachments.removeAt(i)),
                         icon: Icon(Icons.close_rounded,
                             size: 18, color: colorScheme.error),
                         padding: EdgeInsets.zero,
@@ -704,12 +710,12 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
 
             const SizedBox(height: AppSpacing.xl),
 
-            // Submit button ----------------
+            // Submit button
             FilledButton(
               onPressed: _isSubmitting ? null : _submit,
               style: FilledButton.styleFrom(
-                padding:
-                const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                padding: const EdgeInsets.symmetric(
+                    vertical: AppSpacing.md),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16)),
               ),
@@ -729,7 +735,8 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
                   Text(
                     _attachments.isEmpty
                         ? 'Post Notice'
-                        : 'Post Notice  •  ${_attachments.length} file${_attachments.length > 1 ? 's' : ''}',
+                        : 'Post Notice  •  ${_attachments.length} '
+                        'file${_attachments.length > 1 ? 's' : ''}',
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -744,6 +751,8 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
       ),
     );
   }
+
+  //Scope chip widget
 
   Widget _scopeChip(
       String value, String label, IconData icon, ColorScheme cs) {

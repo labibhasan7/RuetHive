@@ -2,12 +2,8 @@ import 'package:flutter/material.dart';
 import '../../core/ui/spacing.dart';
 import '../notification_bell.dart';
 
-/// Shared desktop top app bar used by all three role scaffolds.
-///
-/// Callers supply:
-/// - [pageTitle]  — name of the currently active page
-/// - [userChip]   — the role-specific user identity widget (avatar + name/role)
-/// - [onBack]     — when non-null a back button is shown
+// Shared desktop top app bar used by all three role scaffolds.
+
 class BaseDesktopAppBar extends StatelessWidget {
   final String pageTitle;
   final Widget userChip;

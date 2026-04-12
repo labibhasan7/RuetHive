@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import '../core/ui/spacing.dart';
 
-// ══════════════════════════════════════════════════════════════════
 // SHIMMER BASE
-// A single animated shimmer that all skeleton widgets use.
-// ══════════════════════════════════════════════════════════════════
+
 class _Shimmer extends StatefulWidget {
   final Widget child;
   const _Shimmer({required this.child});

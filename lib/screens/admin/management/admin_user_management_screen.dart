@@ -29,7 +29,7 @@ class _AdminUserManagementScreenState
     },
     {
       'name': 'Labib Hassan',
-      'id': '2303009',
+      'id': '2303052',
       'role': 'CR',
       'dept': 'CSE',
       'batch': '23',
@@ -38,7 +38,7 @@ class _AdminUserManagementScreenState
     },
     {
       'name': 'Arafat Islam',
-      'id': '2303052',
+      'id': '2303009',
       'role': 'Student',
       'dept': 'CSE',
       'batch': '23',
@@ -46,13 +46,13 @@ class _AdminUserManagementScreenState
       'email': 'arafat@ruet.ac.bd',
     },
     {
-      'name': 'Sadia Rahman',
-      'id': '2303015',
+      'name': 'Sanchita Ghosh',
+      'id': '2303010',
       'role': 'Student',
       'dept': 'CSE',
       'batch': '23',
-      'section': 'C',
-      'email': 'sadia@ruet.ac.bd',
+      'section': 'A',
+      'email': 'sanchita@ruet.ac.bd',
     },
     {
       'name': 'System Admin',

@@ -3,14 +3,8 @@ import '../../core/constants.dart';
 import '../../core/ui/spacing.dart';
 import '../notification_bell.dart';
 
-/// Shared mobile top app bar used by all three role scaffolds.
-///
-/// Callers supply:
-/// - [subtitle]       — current tab name shown below the app name
-/// - [roleBadgeLabel] — short role chip (e.g. "CR", "ADMIN"); omit for Student
-/// - [isDarkMode]     — drives the theme toggle icon
-/// - [onToggleTheme]  — called when the theme button is tapped
-/// - [onBack]         — when non-null a back button is shown on the left
+// Shared mobile top app bar used by all three role scaffolds.
+
 class BaseMobileAppBar extends StatelessWidget {
   final String subtitle;
   final String? roleBadgeLabel;

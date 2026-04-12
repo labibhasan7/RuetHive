@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
 import 'widgets/app_scaffold.dart';
 import 'screens/cr/cr_scaffold.dart';
 import 'screens/admin/admin_scaffold.dart';

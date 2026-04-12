@@ -52,7 +52,7 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
     },
   ];
 
-  // ── Actions ──────────────────────────────────────────────────
+  //  Actions
 
   void _delete(int index) {
     setState(() => _posts.removeAt(index));

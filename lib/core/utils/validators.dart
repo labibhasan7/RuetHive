@@ -1,4 +1,4 @@
-/// App-wide form validation functions.
+// App-wide form validation functions.
 
 class AppValidators {
   AppValidators._();
