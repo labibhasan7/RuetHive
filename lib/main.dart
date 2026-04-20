@@ -1,5 +1,7 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ruethive/firebase_options.dart';
 import 'widgets/app_scaffold.dart';
 import 'screens/cr/cr_scaffold.dart';
 import 'screens/admin/admin_scaffold.dart';
@@ -7,7 +9,14 @@ import 'core/state/role_provider.dart';
 import 'core/state/theme_provider.dart';
 import 'core/theme/app_theme.dart';
 
-void main() {
+void main() async{
+
+WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+);
+
   runApp(
     const ProviderScope(
       child: MyApp(),

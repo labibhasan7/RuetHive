@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1022485830185",
+    "project_id": "blog-35fb0",
+    "storage_bucket": "blog-35fb0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1022485830185:android:9b88ecaef16380f8dd5a38",
+        "android_client_info": {
+          "package_name": "com.example.ruethive"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD82wX6y6fZ_W7GUzoD32uL34Mdwl9lVCk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
