@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ruethive/firebase_options.dart';
+import 'package:ruethive/screens/sign/log%20in/login_screen.dart';
 import 'widgets/app_scaffold.dart';
 import 'screens/cr/cr_scaffold.dart';
 import 'screens/admin/admin_scaffold.dart';
@@ -19,7 +20,7 @@ WidgetsFlutterBinding.ensureInitialized();
     options: DefaultFirebaseOptions.currentPlatform,
 );
 
-await FirebaseAuth.instance.signInAnonymously();
+
 
   runApp(
     const ProviderScope(
@@ -39,10 +40,11 @@ class MyApp extends ConsumerWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'RUETHive',
-      theme: AppTheme.light(role),
-      darkTheme: AppTheme.dark(role),
+      theme: AppTheme.light(role ?? UserRole.student),
+      darkTheme: AppTheme.dark(role ?? UserRole.student),
       themeMode: themeMode,
-      home: _buildHome(role),
+      home: role == null ? const LoginScreen() : _buildHome(role),
+      
     );
   }
 

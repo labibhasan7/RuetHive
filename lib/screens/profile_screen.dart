@@ -66,7 +66,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 department: user.department,
                 batch: user.batch,
                 section: user.section,
-                userRole: userRole,
+                userRole: userRole ?? UserRole.student, // changre
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: AppSpacing.xs)),
