@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../data/dummy_data.dart';
+import 'package:ruethive/models/schedule_model.dart';
+import 'package:ruethive/services/firestore.dart';
 import '../widgets/schedule_card.dart';
 import '../widgets/toggle_switch.dart';
 import '../widgets/loading_states.dart';
@@ -16,24 +17,15 @@ class ScheduleScreen extends StatefulWidget {
 class _ScheduleScreenState extends State<ScheduleScreen> {
   bool daily = true;
   DateTime selectedDate = DateTime.now();
-  bool _isLoading = true;
+  final service = FirestoreService();
 
   @override
   void initState() {
     super.initState();
-    // Simulate initial data fetch - replace with Firestore call later
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (mounted) setState(() => _isLoading = false);
-    });
+    
+    
   }
 
-  List<dynamic> get _schedules {
-    if (daily) {
-      return getSchedulesForDate(selectedDate);
-    } else {
-      return fullSchedule;
-    }
-  }
 
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
@@ -79,22 +71,38 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           ),
         ),
         _buildDateCard(colorScheme),
-        Expanded(
-          child: _isLoading
-              ? const Padding(
-            padding: EdgeInsets.all(AppSpacing.md),
-            child: ScheduleListSkeleton(count: 3),
+       
+       Expanded(
+  child: StreamBuilder<List<ScheduleItem>>(
+    stream: daily
+        ? service.getSchedulesByDay(
+            AppDateUtils.weekdayName(selectedDate),
           )
-              : _schedules.isEmpty
-              ? _buildEmptyState(theme)
-              : ListView.builder(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            itemCount: _schedules.length,
-            itemBuilder: (context, index) {
-              return ScheduleCard(item: _schedules[index]);
-            },
-          ),
-        ),
+        : service.getAllSchedules(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Padding(
+          padding: EdgeInsets.all(AppSpacing.md),
+          child: ScheduleListSkeleton(count: 3),
+        );
+      }
+
+      if (!snapshot.hasData || snapshot.data!.isEmpty) {
+        return _buildEmptyState(Theme.of(context));
+      }
+
+      final schedules = snapshot.data!;
+
+      return ListView.builder(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        itemCount: schedules.length,
+        itemBuilder: (context, index) {
+          return ScheduleCard(item: schedules[index]);
+        },
+      );
+    },
+  ),
+),
       ],
     );
   }
