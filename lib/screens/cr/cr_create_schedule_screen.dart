@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:ruethive/models/schedule_model.dart';
+import 'package:ruethive/services/firestore.dart';
 import '../../core/state/user_provider.dart';
 import '../../core/ui/spacing.dart';
 
@@ -67,7 +69,19 @@ class _CRCreateScheduleScreenState
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _isSubmitting = true);
     try {
-      await Future.delayed(const Duration(seconds: 1)); // TODO: Firestore write
+      final item = ScheduleItem(
+        subject: _subjectCtrl.text,
+        courseCode: _codeCtrl.text,
+        teacher: _teacherCtrl.text,
+        room: _roomCtrl.text,
+        startTime: _startTime.format(context),
+        endTime: _endTime.format(context),
+        day: _selectedDay,
+        colorHex: _colors[_selectedColorIndex].value,
+      );
+
+      await FirestoreService().uploadSchedule(item); 
+      
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(

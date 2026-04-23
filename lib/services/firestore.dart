@@ -1,8 +1,27 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/schedule_model.dart';
 
 class FirestoreService {
 final FirebaseFirestore _db = FirebaseFirestore.instance;
+
+
+//funtion to upload Schedule
+
+Future<void> uploadSchedule(ScheduleItem schedule) async {
+  try {
+    final user = FirebaseAuth.instance.currentUser;
+
+    await FirebaseFirestore.instance
+        .collection("Schedules")
+        .add(schedule.toMap());
+
+  } catch (e) {
+    print("Error: $e");
+  }
+}
+
+
 // function to get Schedule
 
 
@@ -11,6 +30,7 @@ Stream<List<ScheduleItem>> getSchedulesByDay(String day) {
       .collection('Schedules')
       .where('day', isEqualTo: day)
       .snapshots()
+      
       .map((snapshot) {
       return snapshot.docs
         .map((doc) => ScheduleItem.fromMap(doc.data()))
