@@ -24,7 +24,7 @@ class NoticeItem {
       'time': time,
       'date': date?.toIso8601String(),
       'postedBy': postedBy,
-      'type': type.toString(),
+      'type': type.name,
     };
   }
 
@@ -36,14 +36,14 @@ class NoticeItem {
       date: map['date'] != null ? DateTime.tryParse(map['date']) : null,
       postedBy: map['postedBy'] ?? '',
       type: NoticeType.values.firstWhere(
-            (e) => e.toString() == map['type'],
+            (e) => e.name == map['type'],
         orElse: () => NoticeType.department,
       ),
     );
   }
 }
 
-enum NoticeType { urgent, department, university }
+enum NoticeType { urgent, department, university , section}
 
 extension NoticeTypeExtension on NoticeType {
   String get label {
@@ -54,6 +54,8 @@ extension NoticeTypeExtension on NoticeType {
         return 'DEPARTMENT';
       case NoticeType.university:
         return 'UNIVERSITY';
+      case NoticeType.section:
+        return 'SECTION';
     }
   }
 
@@ -65,6 +67,8 @@ extension NoticeTypeExtension on NoticeType {
         return const Color(0xFF1E88E5); //blue
       case NoticeType.university:
         return const Color(0xFF9C27B0); //purple
+      case NoticeType.section:
+        return const Color(0xFF43A047); //green 
     }
   }
 

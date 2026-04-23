@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../data/dummy_data.dart';
+import 'package:ruethive/services/firestore.dart';
+
 import '../models/notice_model.dart';
 import '../widgets/loading_states.dart';
 import '../core/ui/spacing.dart';
@@ -15,6 +16,7 @@ class NoticesScreen extends StatefulWidget {
 class _NoticesScreenState extends State<NoticesScreen> {
   NoticeType? _selectedFilter;
   bool _isLoading = true;
+  final FirestoreService _firestoreService = FirestoreService();
 
   @override
   void initState() {
@@ -24,10 +26,7 @@ class _NoticesScreenState extends State<NoticesScreen> {
     });
   }
 
-  List<NoticeItem> get _filteredNotices {
-    if (_selectedFilter == null) return notices;
-    return notices.where((n) => n.type == _selectedFilter).toList();
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -36,22 +35,46 @@ class _NoticesScreenState extends State<NoticesScreen> {
     return Column(
       children: [
         _buildFilterChips(colorScheme),
-        Expanded(
-          child: _isLoading
-              ? const Padding(
-            padding: EdgeInsets.all(AppSpacing.md),
-            child: NoticeListSkeleton(count: 4),
-          )
-              : _filteredNotices.isEmpty
-              ? _buildEmptyState()
-              : ListView.builder(
-            padding: const EdgeInsets.all(AppSpacing.md),
-            itemCount: _filteredNotices.length,
-            itemBuilder: (context, index) {
-              return _NoticeCard(notice: _filteredNotices[index]);
-            },
-          ),
-        ),
+       Expanded(
+  child: StreamBuilder<List<NoticeItem>>(
+    stream: _firestoreService.getAllNotices(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Padding(
+          padding: EdgeInsets.all(AppSpacing.md),
+          child: NoticeListSkeleton(count: 4),
+        );
+      }
+
+      if (snapshot.hasError) {
+        return const Center(child: Text('Something went wrong'));
+      }
+
+      final notices = snapshot.data ?? [];
+
+      // 🔥 KEEP YOUR FILTER LOGIC
+      final filtered = _selectedFilter == null
+          ? notices
+          : notices.where((n) => n.type == _selectedFilter).toList();
+
+      if (filtered.isEmpty) {
+        return _buildEmptyState();
+      }
+
+      return ListView.builder(
+        padding: const EdgeInsets.all(AppSpacing.md),
+        itemCount: filtered.length,
+        itemBuilder: (context, index) {
+          return _NoticeCard(notice: filtered[index]);
+        },
+      );
+    },
+  ),
+),
+
+
+
+
       ],
     );
   }

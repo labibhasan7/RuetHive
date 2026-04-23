@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:ruethive/models/notice_model.dart';
 import 'package:ruethive/models/schedule_model.dart';
 import 'package:ruethive/services/firestore.dart';
 import '../../core/state/user_provider.dart';
@@ -31,13 +32,22 @@ class _CRCreateScheduleScreenState
   final _roomCtrl = TextEditingController();
 
   static const _days = [
-    'Monday', 'Tuesday', 'Wednesday',
-    'Thursday', 'Friday', 'Saturday', 'Sunday'
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
   ];
 
   static const _colors = [
-    Colors.blue, Colors.green, Colors.orange,
-    Colors.purple, Colors.red, Colors.teal,
+    Colors.blue,
+    Colors.green,
+    Colors.orange,
+    Colors.purple,
+    Colors.red,
+    Colors.teal,
   ];
 
   @override
@@ -80,8 +90,8 @@ class _CRCreateScheduleScreenState
         colorHex: _colors[_selectedColorIndex].value,
       );
 
-      await FirestoreService().uploadSchedule(item); 
-      
+      await FirestoreService().uploadSchedule(item);
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -110,10 +120,7 @@ class _CRCreateScheduleScreenState
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Post Schedule'),
-        centerTitle: false,
-      ),
+      appBar: AppBar(title: const Text('Post Schedule'), centerTitle: false),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -128,15 +135,19 @@ class _CRCreateScheduleScreenState
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_rounded,
-                      color: colorScheme.primary, size: 20),
+                  Icon(
+                    Icons.info_rounded,
+                    color: colorScheme.primary,
+                    size: 20,
+                  ),
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
                       'You can only post schedules for ${ref.watch(currentUserProvider).academicSummary}',
                       style: TextStyle(
-                          fontSize: 13,
-                          color: colorScheme.onPrimaryContainer),
+                        fontSize: 13,
+                        color: colorScheme.onPrimaryContainer,
+                      ),
                     ),
                   ),
                 ],
@@ -145,10 +156,13 @@ class _CRCreateScheduleScreenState
             const SizedBox(height: AppSpacing.lg),
 
             // Day selector
-            Text('Day',
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onSurface)),
+            Text(
+              'Day',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface,
+              ),
+            ),
             const SizedBox(height: AppSpacing.sm),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -170,55 +184,72 @@ class _CRCreateScheduleScreenState
 
             // Subject
             _field(
-                ctrl: _subjectCtrl,
-                label: 'Subject *',
-                hint: 'e.g. Data Structures'),
+              ctrl: _subjectCtrl,
+              label: 'Subject *',
+              hint: 'e.g. Data Structures',
+            ),
             const SizedBox(height: AppSpacing.md),
             _field(
-                ctrl: _codeCtrl,
-                label: 'Course Code *',
-                hint: 'e.g. CSE-2101'),
+              ctrl: _codeCtrl,
+              label: 'Course Code *',
+              hint: 'e.g. CSE-2101',
+            ),
             const SizedBox(height: AppSpacing.md),
             _field(
-                ctrl: _teacherCtrl,
-                label: 'Teacher *',
-                hint: 'e.g. Dr. A. Rahman'),
+              ctrl: _teacherCtrl,
+              label: 'Teacher *',
+              hint: 'e.g. Dr. A. Rahman',
+            ),
             const SizedBox(height: AppSpacing.md),
-            _field(
-                ctrl: _roomCtrl, label: 'Room *', hint: 'e.g. Room 302'),
+            _field(ctrl: _roomCtrl, label: 'Room *', hint: 'e.g. Room 302'),
             const SizedBox(height: AppSpacing.lg),
 
             // Time pickers
-            Text('Time',
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onSurface)),
+            Text(
+              'Time',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface,
+              ),
+            ),
             const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
                 Expanded(
-                    child: _timePicker('Start Time', _startTime,
-                            () => _pickTime(true), colorScheme)),
+                  child: _timePicker(
+                    'Start Time',
+                    _startTime,
+                    () => _pickTime(true),
+                    colorScheme,
+                  ),
+                ),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
-                    child: _timePicker('End Time', _endTime,
-                            () => _pickTime(false), colorScheme)),
+                  child: _timePicker(
+                    'End Time',
+                    _endTime,
+                    () => _pickTime(false),
+                    colorScheme,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: AppSpacing.lg),
 
             // Color picker
-            Text('Color',
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onSurface)),
+            Text(
+              'Color',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface,
+              ),
+            ),
             const SizedBox(height: AppSpacing.sm),
             Row(
               children: _colors.asMap().entries.map((e) {
                 final sel = _selectedColorIndex == e.key;
                 return GestureDetector(
-                  onTap: () =>
-                      setState(() => _selectedColorIndex = e.key),
+                  onTap: () => setState(() => _selectedColorIndex = e.key),
                   child: Container(
                     width: 36,
                     height: 36,
@@ -227,13 +258,11 @@ class _CRCreateScheduleScreenState
                       color: e.value,
                       shape: BoxShape.circle,
                       border: sel
-                          ? Border.all(
-                          color: colorScheme.onSurface, width: 3)
+                          ? Border.all(color: colorScheme.onSurface, width: 3)
                           : null,
                     ),
                     child: sel
-                        ? const Icon(Icons.check,
-                        color: Colors.white, size: 18)
+                        ? const Icon(Icons.check, color: Colors.white, size: 18)
                         : null,
                   ),
                 );
@@ -245,20 +274,27 @@ class _CRCreateScheduleScreenState
             FilledButton(
               onPressed: _isSubmitting ? null : _submit,
               style: FilledButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                    vertical: AppSpacing.md),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
               child: _isSubmitting
                   ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                      color: Colors.white, strokeWidth: 2))
-                  : const Text('Post Schedule',
-                  style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.w600)),
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text(
+                      'Post Schedule',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
             ),
           ],
         ),
@@ -279,12 +315,16 @@ class _CRCreateScheduleScreenState
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
       validator: (v) =>
-      (v == null || v.trim().isEmpty) ? 'This field is required' : null,
+          (v == null || v.trim().isEmpty) ? 'This field is required' : null,
     );
   }
 
   Widget _timePicker(
-      String label, TimeOfDay time, VoidCallback onTap, ColorScheme cs) {
+    String label,
+    TimeOfDay time,
+    VoidCallback onTap,
+    ColorScheme cs,
+  ) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -300,14 +340,18 @@ class _CRCreateScheduleScreenState
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label,
-                    style: TextStyle(
-                        fontSize: 12, color: cs.onSurfaceVariant)),
-                Text(time.format(context),
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: cs.onSurface)),
+                Text(
+                  label,
+                  style: TextStyle(fontSize: 12, color: cs.onSurfaceVariant),
+                ),
+                Text(
+                  time.format(context),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: cs.onSurface,
+                  ),
+                ),
               ],
             ),
           ],
@@ -340,16 +384,13 @@ class _Attachment {
   final String extension;
   final int? sizeBytes;
 
-  _Attachment({
-    required this.name,
-    required this.extension,
-    this.sizeBytes,
-  });
+  _Attachment({required this.name, required this.extension, this.sizeBytes});
 
   String get sizeLabel {
     if (sizeBytes == null) return '';
     if (sizeBytes! < 1024) return '${sizeBytes}B';
-    if (sizeBytes! < 1024 * 1024) return '${(sizeBytes! / 1024).toStringAsFixed(1)}KB';
+    if (sizeBytes! < 1024 * 1024)
+      return '${(sizeBytes! / 1024).toStringAsFixed(1)}KB';
     return '${(sizeBytes! / (1024 * 1024)).toStringAsFixed(1)}MB';
   }
 }
@@ -427,20 +468,22 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
             // Avoid duplicates
             final alreadyAdded = _attachments.any((a) => a.name == file.name);
             if (!alreadyAdded) {
-              _attachments.add(_Attachment(
-                name: file.name,
-                extension: file.extension ?? '',
-                sizeBytes: file.size,
-              ));
+              _attachments.add(
+                _Attachment(
+                  name: file.name,
+                  extension: file.extension ?? '',
+                  sizeBytes: file.size,
+                ),
+              );
             }
           }
         });
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not pick file: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Could not pick file: $e')));
       }
     }
   }
@@ -454,7 +497,11 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
       ),
       builder: (ctx) => Padding(
         padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xl),
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.xl,
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -506,7 +553,8 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                       color: type.color.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                          color: type.color.withValues(alpha: 0.3)),
+                        color: type.color.withValues(alpha: 0.3),
+                      ),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -541,7 +589,10 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
       return (icon: Icons.image_rounded, color: const Color(0xFF4CAF50));
     }
     if (lower == 'pdf') {
-      return (icon: Icons.picture_as_pdf_rounded, color: const Color(0xFFEF5350));
+      return (
+        icon: Icons.picture_as_pdf_rounded,
+        color: const Color(0xFFEF5350),
+      );
     }
     if (['doc', 'docx', 'odt', 'rtf'].contains(lower)) {
       return (icon: Icons.description_rounded, color: const Color(0xFF1E88E5));
@@ -556,7 +607,20 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _isSubmitting = true);
     try {
-      await Future.delayed(const Duration(seconds: 1)); // TODO: Firestore write
+      final item = NoticeItem(
+        title: _titleCtrl.text.trim(),
+        description: _bodyCtrl.text.trim(),
+        time: TimeOfDay.now().format(context),
+        date: DateTime.now(),
+        postedBy: "CR",
+        type: _isUrgent
+            ? NoticeType.urgent
+            : _scope == 'section'
+            ? NoticeType.section
+            : NoticeType.department,
+      );
+
+      await FirestoreService().uploadNotice(item);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -590,10 +654,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
     const orange = Color(0xFFFF9800);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Post Notice'),
-        centerTitle: false,
-      ),
+      appBar: AppBar(title: const Text('Post Notice'), centerTitle: false),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -614,7 +675,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                   Expanded(
                     child: Text(
                       'Section notices are visible to Section ${ref.watch(currentUserProvider).section} only. '
-                          'Department notices are visible to all ${ref.watch(currentUserProvider).department} ${ref.watch(currentUserProvider).batch.split(' ').first}.',
+                      'Department notices are visible to all ${ref.watch(currentUserProvider).department} ${ref.watch(currentUserProvider).batch.split(' ').first}.',
                       style: const TextStyle(fontSize: 13, color: orange),
                     ),
                   ),
@@ -624,10 +685,13 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
             const SizedBox(height: AppSpacing.lg),
 
             //  Scope selector
-            Text('Scope',
-                style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: colorScheme.onSurface)),
+            Text(
+              'Scope',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                color: colorScheme.onSurface,
+              ),
+            ),
             const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
@@ -645,7 +709,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                 ),
                 Text(
                   '${ref.watch(currentUserProvider).department} '
-                      '${ref.watch(currentUserProvider).batch.split(' ').first}',
+                  '${ref.watch(currentUserProvider).batch.split(' ').first}',
                 ),
               ],
             ),
@@ -655,9 +719,10 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
             Container(
               decoration: BoxDecoration(
                 border: Border.all(
-                    color: _isUrgent
-                        ? Colors.red.withValues(alpha: 0.5)
-                        : colorScheme.outline),
+                  color: _isUrgent
+                      ? Colors.red.withValues(alpha: 0.5)
+                      : colorScheme.outline,
+                ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: SwitchListTile(
@@ -665,7 +730,8 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                 onChanged: (v) => setState(() => _isUrgent = v),
                 title: const Text('Mark as Urgent'),
                 subtitle: const Text(
-                    'Urgent notices appear at the top with a red badge'),
+                  'Urgent notices appear at the top with a red badge',
+                ),
                 secondary: Icon(
                   Icons.warning_rounded,
                   color: _isUrgent ? Colors.red : colorScheme.onSurfaceVariant,
@@ -681,11 +747,11 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                 labelText: 'Title *',
                 hintText: 'e.g. Lab Rescheduled',
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'Title is required'
-                  : null,
+              validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'Title is required' : null,
             ),
             const SizedBox(height: AppSpacing.md),
 
@@ -698,11 +764,11 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                 hintText: 'Write your notice here...',
                 alignLabelWithHint: true,
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              validator: (v) => (v == null || v.trim().isEmpty)
-                  ? 'Body is required'
-                  : null,
+              validator: (v) =>
+                  (v == null || v.trim().isEmpty) ? 'Body is required' : null,
             ),
             const SizedBox(height: AppSpacing.lg),
 
@@ -721,7 +787,9 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                 if (_attachments.isNotEmpty)
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 2),
+                      horizontal: 8,
+                      vertical: 2,
+                    ),
                     decoration: BoxDecoration(
                       color: colorScheme.primaryContainer,
                       borderRadius: BorderRadius.circular(10),
@@ -764,8 +832,11 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.add_rounded,
-                        color: colorScheme.primary, size: 20),
+                    Icon(
+                      Icons.add_rounded,
+                      color: colorScheme.primary,
+                      size: 20,
+                    ),
                     const SizedBox(width: AppSpacing.sm),
                     Text(
                       'Add Attachment',
@@ -779,17 +850,29 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                     // Supported type icons
                     Row(
                       children: const [
-                        Icon(Icons.image_rounded,
-                            size: 16, color: Color(0xFF4CAF50)),
+                        Icon(
+                          Icons.image_rounded,
+                          size: 16,
+                          color: Color(0xFF4CAF50),
+                        ),
                         SizedBox(width: 4),
-                        Icon(Icons.picture_as_pdf_rounded,
-                            size: 16, color: Color(0xFFEF5350)),
+                        Icon(
+                          Icons.picture_as_pdf_rounded,
+                          size: 16,
+                          color: Color(0xFFEF5350),
+                        ),
                         SizedBox(width: 4),
-                        Icon(Icons.description_rounded,
-                            size: 16, color: Color(0xFF1E88E5)),
+                        Icon(
+                          Icons.description_rounded,
+                          size: 16,
+                          color: Color(0xFF1E88E5),
+                        ),
                         SizedBox(width: 4),
-                        Icon(Icons.text_snippet_rounded,
-                            size: 16, color: Color(0xFF757575)),
+                        Icon(
+                          Icons.text_snippet_rounded,
+                          size: 16,
+                          color: Color(0xFF757575),
+                        ),
                       ],
                     ),
                   ],
@@ -812,12 +895,13 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                     vertical: AppSpacing.sm,
                   ),
                   decoration: BoxDecoration(
-                    color: colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.5),
+                    color: colorScheme.surfaceContainerHighest.withValues(
+                      alpha: 0.5,
+                    ),
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                        color:
-                        colorScheme.outlineVariant.withValues(alpha: 0.5)),
+                      color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
                   ),
                   child: Row(
                     children: [
@@ -829,8 +913,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                           color: style.color.withValues(alpha: 0.12),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child:
-                        Icon(style.icon, color: style.color, size: 22),
+                        child: Icon(style.icon, color: style.color, size: 22),
                       ),
                       const SizedBox(width: AppSpacing.sm),
 
@@ -864,7 +947,9 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                       if (att.extension.isNotEmpty)
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 2),
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: style.color.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(6),
@@ -884,11 +969,16 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                       IconButton(
                         onPressed: () =>
                             setState(() => _attachments.removeAt(i)),
-                        icon: Icon(Icons.close_rounded,
-                            size: 18, color: colorScheme.error),
+                        icon: Icon(
+                          Icons.close_rounded,
+                          size: 18,
+                          color: colorScheme.error,
+                        ),
                         padding: EdgeInsets.zero,
                         constraints: const BoxConstraints(
-                            minWidth: 32, minHeight: 32),
+                          minWidth: 32,
+                          minHeight: 32,
+                        ),
                         tooltip: 'Remove',
                       ),
                     ],
@@ -904,35 +994,41 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
               onPressed: _isSubmitting ? null : _submit,
               style: FilledButton.styleFrom(
                 backgroundColor: orange,
-                padding:
-                const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16)),
+                  borderRadius: BorderRadius.circular(16),
+                ),
               ),
               child: _isSubmitting
                   ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                    color: Colors.white, strokeWidth: 2),
-              )
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
                   : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.send_rounded,
-                      color: Colors.white, size: 18),
-                  const SizedBox(width: AppSpacing.sm),
-                  Text(
-                    _attachments.isEmpty
-                        ? 'Post Notice'
-                        : 'Post Notice  •  ${_attachments.length} file${_attachments.length > 1 ? 's' : ''}',
-                    style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white),
-                  ),
-                ],
-              ),
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.send_rounded,
+                          color: Colors.white,
+                          size: 18,
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        Text(
+                          _attachments.isEmpty
+                              ? 'Post Notice'
+                              : 'Post Notice  •  ${_attachments.length} file${_attachments.length > 1 ? 's' : ''}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
             ),
           ],
         ),

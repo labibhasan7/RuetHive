@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:ruethive/models/notice_model.dart';
 import '../models/schedule_model.dart';
 
 class FirestoreService {
@@ -47,6 +48,55 @@ Stream<List<ScheduleItem>> getSchedulesByDay(String day) {
         .toList();
     });
   }
+//funtion to upload notice
+Future<void> uploadNotice(NoticeItem notice) async {
+   
+    try {
+     await FirebaseFirestore.instance
+          .collection("Notices")
+          .add(notice.toMap());
+          
+    } 
+    
+    catch (e) {
+      print("Error: $e");
+    }
+  }
+
+
+// funtion to get notice
+
+
+ Stream<List<NoticeItem>> getAllNotices() {
+  return _db
+      .collection('Notices')
+      .orderBy('date', descending: true)
+      .snapshots()
+      .map((snapshot) {
+    return snapshot.docs
+        .map((doc) => NoticeItem.fromMap(doc.data()))
+        .toList();
+  });
+}
+
+Stream<List<NoticeItem>> getNoticesByType(NoticeType type) {
+  return _db
+      .collection('Notices')
+      .where('type', isEqualTo: type.name)
+      .orderBy('date', descending: true)
+      .snapshots()
+      .map((snapshot) {
+    return snapshot.docs
+        .map((doc) => NoticeItem.fromMap(doc.data()))
+        .toList();
+  });
+}
+
+
 
 
 }
+
+
+
+
