@@ -5,7 +5,7 @@ class AuthService {
   final _auth = FirebaseAuth.instance;
   final _db = FirebaseFirestore.instance;
 
-  // 🟢 SIGN UP
+  //SIGN UP
   Future<User?> signUp(
   String email,
   String password,
@@ -26,14 +26,14 @@ class AuthService {
       'section': section,
       'department': department,
       'rollNumber': rollNumber,
-      'role': 'student', // 🔥 default role
+      'role': 'student', // default role
     });
   }
 
   return user;
 }
 
-  // 🟢 LOGIN
+  //LOGIN
   Future<User?> login(String email, String password) async {
     final userCredential = await _auth.signInWithEmailAndPassword(
       email: email,
@@ -43,13 +43,13 @@ class AuthService {
     return userCredential.user;
   }
 
-  // 🟢 GET ROLE
+  //GET ROLE
   Future<String> getUserRole(String uid) async {
     final doc = await _db.collection('users').doc(uid).get();
     return doc['role'];
   }
 
-  // 🟢 LOGOUT
+  //LOGOUT
   Future<void> logout() async {
     await _auth.signOut();
   }
