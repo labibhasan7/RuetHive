@@ -638,7 +638,10 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
       );
 
       await FirestoreService().uploadNotice(item);
-      await Onesignal().sendPushNotification( _titleCtrl.text.trim());
+      await Onesignal().sendPushNotification(
+      _titleCtrl.text.trim(),
+    _bodyCtrl.text.trim(),
+    );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

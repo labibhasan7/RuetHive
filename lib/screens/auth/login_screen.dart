@@ -65,7 +65,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen>
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
     final colorScheme = Theme.of(context).colorScheme;
-
     final isLoading = authState.status == AuthStatus.unknown;
 
     return Scaffold(

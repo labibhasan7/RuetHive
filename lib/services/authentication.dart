@@ -27,20 +27,16 @@ class AuthService {
   // LOGIN
 
   Future<User?> login({
-  required String email,
-  required String password,
-}) async {
-  try {
+    required String email,
+    required String password,
+  }) async {
     final cred = await _auth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
 
     return cred.user;
-  } on FirebaseAuthException catch (e) {
-    throw Exception(e.message);
   }
-}
 
   // GET USER
 

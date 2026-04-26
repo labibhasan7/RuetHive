@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ruethive/models/app_user.dart';
 import 'package:ruethive/models/schedule_model.dart';
 import 'package:ruethive/services/firestore.dart';
 import '../data/dummy_data.dart';
@@ -36,7 +37,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   Widget build(BuildContext context) {
     final isDesktop = Responsive.isDesktop(context);
     final colorScheme = Theme.of(context).colorScheme;
-    final user = ref.watch(currentUserProvider);
+    final user = ref.watch(currentUserProvider).valueOrNull;
 
     if (isDesktop) {
       return _buildDesktopLayout(context, colorScheme, user);
@@ -275,37 +276,37 @@ StreamBuilder<List<ScheduleItem>>(
 
   //  Components
 
-  Widget _buildWelcomeCard(ColorScheme colorScheme, user) {
-    return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Welcome, ${user.firstName}!",
-              style: TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
-              ),
+ Widget _buildWelcomeCard(ColorScheme colorScheme, AppUser? user) {
+  return Card(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(20),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            user != null ? "Welcome, ${user.firstName}!" : "Welcome!",
+            style: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
             ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              user.academicSummary,
-              style: TextStyle(
-                fontSize: 16,
-                color: colorScheme.onSurfaceVariant,
-              ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            user?.academicSummary ?? "Loading...",
+            style: TextStyle(
+              fontSize: 16,
+              color: colorScheme.onSurfaceVariant,
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildCalendarHeader(ColorScheme colorScheme) {
     return Container(

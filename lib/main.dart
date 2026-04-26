@@ -20,11 +20,17 @@ WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
 );
-  OneSignal.initialize("bd57ea52-fe57-46c8-bf79-682ec94806a2");
+  OneSignal.initialize("ad0e2378-558f-4d8b-95cd-97093c47faa3");
   OneSignal.Notifications.addForegroundWillDisplayListener((event) {
     event.notification.display(); 
   });
+
+  await OneSignal.Notifications.requestPermission(true);
+  await OneSignal.User.pushSubscription.optIn();
+  
   OneSignal.Notifications.requestPermission(true);
+  final pushId = OneSignal.User.pushSubscription.id;
+  final token = OneSignal.User.pushSubscription.token;
 
 
   runApp(
