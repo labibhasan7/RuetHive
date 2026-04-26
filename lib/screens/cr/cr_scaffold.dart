@@ -46,7 +46,8 @@ class CRScaffold extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final navState   = ref.watch(crNavProvider);
     final isDarkMode = ref.watch(isDarkModeProvider);
-    final user       = ref.watch(currentUserProvider);
+    final userAsync = ref.watch(currentUserProvider);
+    final user = userAsync.value;
 
     final screens = const [
       DashboardScreen(),
@@ -118,14 +119,14 @@ class CRScaffold extends ConsumerWidget {
                           radius: 16,
                           backgroundColor: colorScheme.primary,
                           child: Text(
-                            user.initials,
+                            user?.initials ?? '',
                             style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold),
                           ),
                         ),
-                        name: user.name,
+                        name: user?.name ?? '',
                         roleLabel: 'Class Representative',
                       ),
                     ),

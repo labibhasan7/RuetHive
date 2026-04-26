@@ -15,16 +15,9 @@ class NoticesScreen extends StatefulWidget {
 
 class _NoticesScreenState extends State<NoticesScreen> {
   NoticeType? _selectedFilter;
-  bool _isLoading = true;
+
   final FirestoreService _firestoreService = FirestoreService();
 
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(const Duration(milliseconds: 700), () {
-      if (mounted) setState(() => _isLoading = false);
-    });
-  }
 
  
 
@@ -52,7 +45,7 @@ class _NoticesScreenState extends State<NoticesScreen> {
 
       final notices = snapshot.data ?? [];
 
-      // 🔥 KEEP YOUR FILTER LOGIC
+  
       final filtered = _selectedFilter == null
           ? notices
           : notices.where((n) => n.type == _selectedFilter).toList();

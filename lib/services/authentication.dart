@@ -1,55 +1,56 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../models/app_user.dart';
 
 class AuthService {
   final _auth = FirebaseAuth.instance;
-  final _db = FirebaseFirestore.instance;
+  final _firestore = FirebaseFirestore.instance;
 
-  //SIGN UP
-  Future<User?> signUp(
-  String email,
-  String password,
-  String section,
-  String department,
-  String rollNumber,
-) async {
-  final userCredential = await _auth.createUserWithEmailAndPassword(
-    email: email,
-    password: password,
-  );
+  // SIGN UP
 
-  final user = userCredential.user;
-
-  if (user != null) {
-    await _db.collection('users').doc(user.uid).set({
-      'email': email,
-      'section': section,
-      'department': department,
-      'rollNumber': rollNumber,
-      'role': 'student', // default role
-    });
-  }
-
-  return user;
-}
-
-  //LOGIN
-  Future<User?> login(String email, String password) async {
-    final userCredential = await _auth.signInWithEmailAndPassword(
+  Future<void> signUp({
+    required String email,
+    required String password,
+    required AppUser user,
+  }) async {
+    final cred = await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
 
-    return userCredential.user;
+    await _firestore
+        .collection('users')
+        .doc(cred.user!.uid)
+        .set(user.toMap());
   }
 
-  //GET ROLE
-  Future<String> getUserRole(String uid) async {
-    final doc = await _db.collection('users').doc(uid).get();
-    return doc['role'];
+  // LOGIN
+
+  Future<User?> login({
+  required String email,
+  required String password,
+}) async {
+  try {
+    final cred = await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+
+    return cred.user;
+  } on FirebaseAuthException catch (e) {
+    throw Exception(e.message);
+  }
+}
+
+  // GET USER
+
+  Future<AppUser> getUser(String uid) async {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    return AppUser.fromMap(doc.data()!, uid);
   }
 
-  //LOGOUT
+  // LOGOUT
+
   Future<void> logout() async {
     await _auth.signOut();
   }

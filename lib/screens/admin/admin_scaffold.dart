@@ -54,7 +54,8 @@ class AdminScaffold extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final navState   = ref.watch(adminNavProvider);
     final isDarkMode = ref.watch(isDarkModeProvider);
-    final user       = ref.watch(currentUserProvider);
+    final userAsync = ref.watch(currentUserProvider);
+  final user = userAsync.value;
 
     final screens =  [
       AdminDashboardScreen(),
@@ -133,8 +134,8 @@ class AdminScaffold extends ConsumerWidget {
                               color: Colors.white,
                               size: 18),
                         ),
-                        name: user.name,
-                        roleLabel: '${user.department} Admin',
+                        name: user?.name ?? '',
+                        roleLabel: '${user?.department ?? ''} Admin',
                       ),
                     ),
                     Expanded(

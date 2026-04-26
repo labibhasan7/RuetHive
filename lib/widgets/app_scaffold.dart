@@ -30,7 +30,8 @@ class AppScaffold extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final navState  = ref.watch(navigationProvider);
     final isDarkMode = ref.watch(isDarkModeProvider);
-    final user       = ref.watch(currentUserProvider);
+    final userAsync = ref.watch(currentUserProvider);
+    final user = userAsync.value;
 
     final screens = const [
       DashboardScreen(),
@@ -95,8 +96,8 @@ class AppScaffold extends ConsumerWidget {
                           ref.read(navigationProvider.notifier).goBack()
                           : null,
                       userChip: UserChipInitials(
-                        initials: user.initials,
-                        name: user.name,
+                        initials: user?.initials ?? '',
+                        name: user?.name ?? '',
                       ),
                     ),
                     Expanded(

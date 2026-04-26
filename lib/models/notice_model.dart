@@ -7,6 +7,7 @@ class NoticeItem {
   final DateTime? date;   //calendar-filtering
   final String postedBy;
   final NoticeType type;
+  final String id;
 
   NoticeItem({
     required this.title,
@@ -15,6 +16,7 @@ class NoticeItem {
     this.date,
     required this.postedBy,
     this.type = NoticeType.department,
+    required this.id,
   });
 
   Map<String, dynamic> toMap() {
@@ -28,7 +30,7 @@ class NoticeItem {
     };
   }
 
-  factory NoticeItem.fromMap(Map<String, dynamic> map) {
+  factory NoticeItem.fromMap(Map<String, dynamic> map, String id) {
     return NoticeItem(
       title: map['title'] ?? '',
       description: map['description'] ?? '',
@@ -36,9 +38,10 @@ class NoticeItem {
       date: map['date'] != null ? DateTime.tryParse(map['date']) : null,
       postedBy: map['postedBy'] ?? '',
       type: NoticeType.values.firstWhere(
-            (e) => e.name == map['type'],
-        orElse: () => NoticeType.department,
-      ),
+        (e) => e.name == (map['type'] ?? '').toString().trim(),
+      orElse: () => NoticeType.department,
+    ),
+      id: id,
     );
   }
 }

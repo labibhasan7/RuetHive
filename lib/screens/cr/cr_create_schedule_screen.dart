@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:ruethive/models/notice_model.dart';
 import 'package:ruethive/models/schedule_model.dart';
 import 'package:ruethive/services/firestore.dart';
+import 'package:ruethive/services/onesignal.dart';
 import '../../core/state/user_provider.dart';
 import '../../core/ui/spacing.dart';
 
@@ -78,8 +79,16 @@ class _CRCreateScheduleScreenState
   Future<void> _submit() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _isSubmitting = true);
+     final user = ref.read(currentUserProvider).value;
+
+     if (user == null) {
+    setState(() => _isSubmitting = false);
+    return;
+  }
+
     try {
       final item = ScheduleItem(
+        id: '',
         subject: _subjectCtrl.text,
         courseCode: _codeCtrl.text,
         teacher: _teacherCtrl.text,
@@ -88,6 +97,9 @@ class _CRCreateScheduleScreenState
         endTime: _endTime.format(context),
         day: _selectedDay,
         colorHex: _colors[_selectedColorIndex].value,
+        section: user.section,
+        status: 'active',
+        createdBy: user.uid,     
       );
 
       await FirestoreService().uploadSchedule(item);
@@ -118,6 +130,10 @@ class _CRCreateScheduleScreenState
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final userAsync = ref.watch(currentUserProvider);
+  final user = userAsync.value;
+  if (user == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+
 
     return Scaffold(
       appBar: AppBar(title: const Text('Post Schedule'), centerTitle: false),
@@ -143,7 +159,7 @@ class _CRCreateScheduleScreenState
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
-                      'You can only post schedules for ${ref.watch(currentUserProvider).academicSummary}',
+                      'You can only post schedules for ${user.academicSummary}',
                       style: TextStyle(
                         fontSize: 13,
                         color: colorScheme.onPrimaryContainer,
@@ -608,6 +624,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
     setState(() => _isSubmitting = true);
     try {
       final item = NoticeItem(
+        id: '',
         title: _titleCtrl.text.trim(),
         description: _bodyCtrl.text.trim(),
         time: TimeOfDay.now().format(context),
@@ -621,6 +638,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
       );
 
       await FirestoreService().uploadNotice(item);
+      await Onesignal().sendPushNotification( _titleCtrl.text.trim());
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -653,6 +671,10 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
     final colorScheme = Theme.of(context).colorScheme;
     const orange = Color(0xFFFF9800);
 
+  final userAsync = ref.watch(currentUserProvider);
+  final user = userAsync.value;
+  if (user == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+
     return Scaffold(
       appBar: AppBar(title: const Text('Post Notice'), centerTitle: false),
       body: Form(
@@ -674,8 +696,8 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                   const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
-                      'Section notices are visible to Section ${ref.watch(currentUserProvider).section} only. '
-                      'Department notices are visible to all ${ref.watch(currentUserProvider).department} ${ref.watch(currentUserProvider).batch.split(' ').first}.',
+                      'Section notices are visible to Section ${user.section} only. '
+                      'Department notices are visible to all ${user.department} ${user.batch.split(' ').first}.',
                       style: const TextStyle(fontSize: 13, color: orange),
                     ),
                   ),
@@ -700,7 +722,7 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                   groupValue: _scope,
                   onChanged: (v) => setState(() => _scope = v!),
                 ),
-                Text('Section ${ref.watch(currentUserProvider).section} only'),
+                Text('Section ${user.section} only'),
                 const SizedBox(width: AppSpacing.lg),
                 Radio<String>(
                   value: 'department',
@@ -708,8 +730,8 @@ class _CRCreateNoticeScreenState extends ConsumerState<CRCreateNoticeScreen> {
                   onChanged: (v) => setState(() => _scope = v!),
                 ),
                 Text(
-                  '${ref.watch(currentUserProvider).department} '
-                  '${ref.watch(currentUserProvider).batch.split(' ').first}',
+                  '${user.department} '
+                  '${user.batch.split(' ').first}',
                 ),
               ],
             ),

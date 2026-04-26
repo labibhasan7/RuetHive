@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:ruethive/services/onesignal.dart';
 import '../../core/ui/spacing.dart';
 import '../../core/utils/validators.dart';
+import 'package:ruethive/models/notice_model.dart';
+import 'package:ruethive/services/firestore.dart';
 
 // ATTACHMENT HELPERS
 class _AttachmentType {
@@ -272,7 +275,23 @@ class _AdminCreateNoticeScreenState extends State<AdminCreateNoticeScreen> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _isSubmitting = true);
     try {
-      await Future.delayed(const Duration(seconds: 1)); // TODO: Firestore write
+      final item = NoticeItem(
+        id: '',
+        title: _titleCtrl.text.trim(),
+        description: _bodyCtrl.text.trim(),
+        time: TimeOfDay.now().format(context),
+        date: DateTime.now(),
+        postedBy: "CR",
+        type: _isUrgent
+            ? NoticeType.urgent
+            : _scope == 'section'
+            ? NoticeType.section
+            : NoticeType.department,
+      );
+
+      await FirestoreService().uploadNotice(item);
+      await Onesignal().sendPushNotification( _titleCtrl.text.trim());
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(

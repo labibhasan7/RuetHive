@@ -2,8 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:ruethive/firebase_options.dart';
-import 'package:ruethive/screens/sign/log%20in/login_screen.dart';
+import 'package:ruethive/screens/auth/login_screen.dart';
 import 'widgets/app_scaffold.dart';
 import 'screens/cr/cr_scaffold.dart';
 import 'screens/admin/admin_scaffold.dart';
@@ -19,7 +20,11 @@ WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
 );
-
+  OneSignal.initialize("bd57ea52-fe57-46c8-bf79-682ec94806a2");
+  OneSignal.Notifications.addForegroundWillDisplayListener((event) {
+    event.notification.display(); 
+  });
+  OneSignal.Notifications.requestPermission(true);
 
 
   runApp(

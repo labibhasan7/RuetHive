@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ruethive/models/app_user.dart';
+import 'package:ruethive/models/notice_model.dart';
+import 'package:ruethive/services/firestore.dart';
 import '../../core/state/user_provider.dart';
 import '../../core/ui/spacing.dart';
 import '../../core/ui/shadows.dart';
@@ -10,64 +13,44 @@ class CRManagementScreen extends ConsumerStatefulWidget {
   const CRManagementScreen({super.key});
 
   @override
-  ConsumerState<CRManagementScreen> createState() =>
-      _CRManagementScreenState();
+  ConsumerState<CRManagementScreen> createState() => _CRManagementScreenState();
 }
 
 class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
   bool _isLoading = true;
+  final firestoreService = FirestoreService();
+  List<NoticeItem> _posts = [];
 
-  @override
-  void initState() {
-    super.initState();
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (mounted) setState(() => _isLoading = false);
+@override
+void initState() {
+  super.initState();
+
+  firestoreService.getAllNotices().listen((data) {
+    setState(() {
+      _posts = data;
+      _isLoading = false;
     });
-  }
+  });
+}
+  
 
-  final List<Map<String, dynamic>> _posts = [
-    {
-      'type': 'SCHEDULE',
-      'title': 'Data Structures – Monday 9:00 AM',
-      'date': '2 days ago',
-      'status': 'ACTIVE',
-    },
-    {
-      'type': 'NOTICE',
-      'title': 'Lab Rescheduled – This Friday',
-      'date': '3 days ago',
-      'status': 'ACTIVE',
-    },
-    {
-      'type': 'SCHEDULE',
-      'title': 'OOP Extra Class – Saturday 11 AM',
-      'date': '1 week ago',
-      'status': 'PENDING',
-    },
-    {
-      'type': 'NOTICE',
-      'title': 'Assignment Due Date Extended',
-      'date': '1 week ago',
-      'status': 'PENDING',
-    },
-  ];
+  
+
 
   //  Actions
 
-  void _delete(int index) {
-    setState(() => _posts.removeAt(index));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: const Text('🗑️ Post deleted'),
-        backgroundColor: Theme.of(context).colorScheme.error,
-        duration: const Duration(seconds: 2),
-      ),
-    );
-  }
+Future<void> _delete(String id) async {
+  await firestoreService.deleteNotice(id);
 
-  void _edit(BuildContext context, int index) {
-    final post = _posts[index];
-    final ctrl = TextEditingController(text: post['title']);
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(content: Text('🗑️ Post deleted')),
+  );
+}
+
+
+  void _edit(BuildContext context,  NoticeItem notice) {
+   
+      final ctrl = TextEditingController(text: notice.title);
 
     showModalBottomSheet(
       context: context,
@@ -99,9 +82,8 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
             ),
             const SizedBox(height: AppSpacing.md),
             Text(
-              'Edit ${post['type'] == 'SCHEDULE' ? 'Schedule' : 'Notice'}',
-              style: const TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.bold),
+              'Edit Notice',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: AppSpacing.md),
             TextField(
@@ -110,7 +92,8 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
               decoration: InputDecoration(
                 labelText: 'Title',
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
             const SizedBox(height: AppSpacing.md),
@@ -125,20 +108,24 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
                 const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: FilledButton(
-                    onPressed: () {
-                      final newTitle = ctrl.text.trim();
-                      if (newTitle.isNotEmpty) {
-                        setState(() => _posts[index]['title'] = newTitle);
-                        Navigator.pop(ctx);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('✅ Post updated'),
-                            backgroundColor: Colors.green,
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
-                      }
-                    },
+           
+    onPressed: () async {
+  final newTitle = ctrl.text.trim();
+  if (newTitle.isEmpty) return;
+  await firestoreService.updateNotice(
+    notice.id,
+    {'title': newTitle},
+  );
+  if (!mounted) return;
+  Navigator.pop(ctx);
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text('✅ Post updated'),
+      backgroundColor: Colors.green,
+      duration: Duration(seconds: 2),
+    ),
+  );
+},
                     child: const Text('Save'),
                   ),
                 ),
@@ -153,15 +140,23 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+     final userAsync = ref.watch(currentUserProvider);
+    final user = userAsync.value;
+  if (user == null) return const Scaffold(body: Center(child: CircularProgressIndicator()));
+
 
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        _buildHeader(colorScheme),
+        _buildHeader(colorScheme, user),
         _buildQuickActions(context, colorScheme),
         Padding(
           padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md, AppSpacing.lg, AppSpacing.md, AppSpacing.sm),
+            AppSpacing.md,
+            AppSpacing.lg,
+            AppSpacing.md,
+            AppSpacing.sm,
+          ),
           child: Text(
             'My Posted Content',
             style: TextStyle(
@@ -179,14 +174,16 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
         else if (_posts.isEmpty)
           _buildEmptyState()
         else
-          ..._posts.asMap().entries.map((entry) =>
-              _buildPostCard(context, colorScheme, entry.value, entry.key)),
+          ..._posts.asMap().entries.map(
+            (entry) =>
+                _buildPostCard(context, colorScheme, entry.value, entry.key),
+          ),
         const SizedBox(height: AppSpacing.xxl),
       ],
     );
   }
 
-  Widget _buildHeader(ColorScheme colorScheme) {
+  Widget _buildHeader(ColorScheme colorScheme, AppUser user) {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -199,7 +196,11 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
         ),
       ),
       padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xl),
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.xl,
+      ),
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -209,7 +210,9 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 10, vertical: 4),
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
@@ -217,9 +220,10 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
                   child: const Text(
                     '📋 Class Representative',
                     style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],
@@ -235,7 +239,7 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
             ),
             const SizedBox(height: 4),
             Text(
-              ref.watch(currentUserProvider).academicSummary,
+              user.academicSummary,
               style: const TextStyle(fontSize: 14, color: Colors.white70),
             ),
           ],
@@ -276,7 +280,8 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => const CRCreateScheduleScreen()),
+                      builder: (_) => const CRCreateScheduleScreen(),
+                    ),
                   ),
                 ),
               ),
@@ -290,7 +295,8 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (_) => const CRCreateNoticeScreen()),
+                      builder: (_) => const CRCreateNoticeScreen(),
+                    ),
                   ),
                 ),
               ),
@@ -316,7 +322,9 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.symmetric(
-              vertical: AppSpacing.md, horizontal: AppSpacing.sm),
+            vertical: AppSpacing.md,
+            horizontal: AppSpacing.sm,
+          ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -337,22 +345,28 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
     );
   }
 
-  Widget _buildPostCard(BuildContext context, ColorScheme colorScheme,
-      Map<String, dynamic> post, int index) {
-    final isSchedule = post['type'] == 'SCHEDULE';
-    final isPending = post['status'] == 'PENDING';
-    final typeColor =
-    isSchedule ? colorScheme.primary : const Color(0xFFFF9800);
+  Widget _buildPostCard(
+  BuildContext context,
+  ColorScheme colorScheme,
+  NoticeItem notice,
+  int index,
+)
+{
+  
+  final isPending = false; 
+    final typeColor = const Color(0xFFFF9800);
+        
 
     return Container(
       margin: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
       decoration: BoxDecoration(
         color: colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: isPending
-            ? Border.all(
-            color: Colors.orange.withValues(alpha: 0.5), width: 1)
+            ? Border.all(color: Colors.orange.withValues(alpha: 0.5), width: 1)
             : null,
         boxShadow: const [AppShadows.card],
       ),
@@ -368,11 +382,10 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                  isSchedule
-                      ? Icons.event_note_rounded
-                      : Icons.campaign_rounded,
-                  color: typeColor,
-                  size: 22),
+                Icons.campaign_rounded,
+                color: typeColor,
+                size: 22,
+              ),
             ),
             const SizedBox(width: AppSpacing.md),
             Expanded(
@@ -381,14 +394,14 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
                 children: [
                   Row(
                     children: [
-                      _badge(post['type'], typeColor),
+                      _badge('NOTICE', typeColor),
                       const SizedBox(width: AppSpacing.xs),
                       if (isPending) _badge('PENDING', Colors.orange),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    post['title'],
+                    notice.title,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -396,9 +409,11 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
                     ),
                   ),
                   Text(
-                    post['date'],
+                    notice.time,
                     style: TextStyle(
-                        fontSize: 12, color: colorScheme.onSurfaceVariant),
+                      fontSize: 12,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ],
               ),
@@ -407,15 +422,21 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  onPressed: () => _edit(context, index),
-                  icon: Icon(Icons.edit_rounded,
-                      size: 20, color: colorScheme.primary),
+                   onPressed: () => _edit(context, notice),
+                  icon: Icon(
+                    Icons.edit_rounded,
+                    size: 20,
+                    color: colorScheme.primary,
+                  ),
                   tooltip: 'Edit',
                 ),
                 IconButton(
-                  onPressed: () => _delete(index),
-                  icon: Icon(Icons.delete_rounded,
-                      size: 20, color: colorScheme.error),
+                   onPressed: () => _delete(notice.id),
+                  icon: Icon(
+                    Icons.delete_rounded,
+                    size: 20,
+                    color: colorScheme.error,
+                  ),
                   tooltip: 'Delete',
                 ),
               ],
@@ -433,7 +454,7 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
         icon: Icons.inbox_rounded,
         title: 'Nothing posted yet',
         subtitle:
-        'Your schedules and notices will appear here once you post them',
+            'Your schedules and notices will appear here once you post them',
       ),
     );
   }
@@ -448,7 +469,10 @@ class _CRManagementScreenState extends ConsumerState<CRManagementScreen> {
       child: Text(
         label,
         style: TextStyle(
-            fontSize: 10, fontWeight: FontWeight.bold, color: color),
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+          color: color,
+        ),
       ),
     );
   }

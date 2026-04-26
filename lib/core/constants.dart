@@ -21,4 +21,10 @@ class AppConstants {
   static const Duration fastAnimation = Duration(milliseconds: 200);
   static const Duration mediumAnimation = Duration(milliseconds: 350);
   static const Duration slowAnimation = Duration(milliseconds: 500);
-}
+  static const Duration extraSlowAnimation = Duration(milliseconds: 700);
+
+  // Auth UI consistency
+  static const double inputHeight = 56;
+  static const double buttonHeight = 52;
+  static const double iconSize = 20;
+  }

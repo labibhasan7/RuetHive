@@ -1,11 +1,10 @@
 import '../core/state/role_provider.dart';
 
-// Represents the currently logged-in user.
-
 class AppUser {
+  final String uid;
   final String name;
-  final String studentId;
   final String email;
+  final String studentId;
   final String department;
   final String batch;
   final String section;
@@ -13,9 +12,10 @@ class AppUser {
   final String memberSince;
 
   const AppUser({
+    required this.uid,
     required this.name,
-    required this.studentId,
     required this.email,
+    required this.studentId,
     required this.department,
     required this.batch,
     required this.section,
@@ -23,7 +23,7 @@ class AppUser {
     required this.memberSince,
   });
 
-  /// Short first name for greetings
+    /// Short first name for greetings
   String get firstName => name.split(' ').first;
 
   /// Initials for avatar fallback
@@ -38,37 +38,42 @@ class AppUser {
   /// One-line academic summary
   String get academicSummary => '$department • $batch • Section $section';
 
-  /// Dummy user for development — later replace with Firestore
-  static const AppUser dummy = AppUser(
-    name: 'Dipannita Biswas',
-    studentId: '2303030',
-    email: 'dipannitaskylight@gmail.com',
-    department: 'CSE',
-    batch: '23 Series',
-    section: 'A',
-    role: UserRole.student,
-    memberSince: 'August 2023',
-  );
 
-  /// Convenience copy with a different role (for role-switching in dev).
-  AppUser copyWith({
-    String? name,
-    String? studentId,
-    String? email,
-    String? department,
-    String? batch,
-    String? section,
-    UserRole? role,
-    String? memberSince,
-  }) =>
-      AppUser(
-        name: name ?? this.name,
-        studentId: studentId ?? this.studentId,
-        email: email ?? this.email,
-        department: department ?? this.department,
-        batch: batch ?? this.batch,
-        section: section ?? this.section,
-        role: role ?? this.role,
-        memberSince: memberSince ?? this.memberSince,
-      );
+  factory AppUser.fromMap(Map<String, dynamic> map, String uid) {
+    return AppUser(
+      uid: uid,
+      name: map['name'] ?? '',
+      email: map['email'] ?? '',
+      studentId: map['studentId'] ?? '',
+      department: map['department'] ?? '',
+      batch: map['batch'] ?? '',
+      section: map['section'] ?? '',
+      role: _parseRole(map['role']),
+      memberSince: map['memberSince'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'email': email,
+      'studentId': studentId,
+      'department': department,
+      'batch': batch,
+      'section': section,
+      'role': role.name,
+      'memberSince': memberSince,
+    };
+  }
+
+  static UserRole _parseRole(String? role) {
+    switch (role) {
+      case 'admin':
+        return UserRole.admin;
+      case 'cr':
+        return UserRole.cr;
+      default:
+        return UserRole.student;
+    }
+  }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ruethive/models/schedule_model.dart';
+import 'package:ruethive/services/firestore.dart';
 import '../data/dummy_data.dart';
 import '../widgets/schedule_card.dart';
 import '../widgets/calendar_grid.dart';
@@ -44,7 +46,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
   //  Mobile Layout
 
-  Widget _buildMobileLayout(
+   Widget _buildMobileLayout(
       BuildContext context, ColorScheme colorScheme, user) {
     if (_isLoading) {
       return ListView(
@@ -72,10 +74,42 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           ),
         ),
         const SizedBox(height: AppSpacing.sm),
-        if (todaySchedule.isEmpty)
-          _buildEmptyState(colorScheme, "No classes today! 🎉")
-        else
-          ...todaySchedule.map((e) => ScheduleCard(item: e)),
+
+
+ 
+ 
+        
+StreamBuilder<List<ScheduleItem>>(
+  stream: FirestoreService().getAllSchedules(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const ScheduleListSkeleton(count: 3);
+    }
+
+    if (snapshot.hasError) {
+      return Text("Error: ${snapshot.error}");
+    }
+
+    final schedules = snapshot.data ?? [];
+
+    final todayName = AppDateUtils.weekdayName(
+      selectedDate ?? DateTime.now(),
+    );
+
+    final todaySchedules =
+        schedules.where((s) => s.day == todayName).toList();
+
+    if (todaySchedules.isEmpty) {
+      return _buildEmptyState(colorScheme, "No classes today! 🎉");
+    }
+
+    return Column(
+      children: todaySchedules
+          .map((e) => ScheduleCard(item: e))
+          .toList(),
+    );
+  },
+),
       ],
     );
   }
@@ -161,10 +195,33 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.sm),
-                if (todaySchedule.isEmpty)
-                  _buildEmptyState(colorScheme, "No classes today! 🎉")
-                else
-                  ...todaySchedule.map((e) => ScheduleCard(item: e)),
+              // এটা দাও
+StreamBuilder<List<ScheduleItem>>(
+  stream: FirestoreService().getAllSchedules(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const ScheduleListSkeleton(count: 3);
+    }
+    if (snapshot.hasError) {
+      return Text("Error: ${snapshot.error}");
+    }
+    final schedules = snapshot.data ?? [];
+    final todayName = AppDateUtils.weekdayName(
+      selectedDate ?? DateTime.now(),
+    );
+    final todaySchedules =
+        schedules.where((s) => s.day == todayName).toList();
+
+    if (todaySchedules.isEmpty) {
+      return _buildEmptyState(colorScheme, "No classes today! 🎉");
+    }
+    return Column(
+      children: todaySchedules
+          .map((e) => ScheduleCard(item: e))
+          .toList(),
+    );
+  },
+),
               ],
             ),
           ),

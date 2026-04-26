@@ -92,6 +92,7 @@ class ProfileMenuCard extends StatelessWidget {
 class _MenuTile extends StatelessWidget {
   final ProfileMenuItem item;
   final ColorScheme colorScheme;
+  
 
   const _MenuTile({required this.item, required this.colorScheme});
 
@@ -149,6 +150,7 @@ class ProfileLogoutButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const ProfileLogoutButton({super.key, required this.onTap});
+  
 
   @override
   Widget build(BuildContext context) {

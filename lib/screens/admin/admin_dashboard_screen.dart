@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ruethive/models/app_user.dart';
+import 'package:ruethive/services/firestore.dart';
 import '../../core/state/user_provider.dart';
 import '../../core/ui/spacing.dart';
 import '../../core/ui/shadows.dart';
@@ -71,11 +73,13 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final userAsync = ref.watch(currentUserProvider);
+    final user = userAsync.value;
 
     return ListView(
       padding: EdgeInsets.zero,
       children: [
-        _buildHeader(colorScheme),
+        _buildHeader(colorScheme, user),
         if (_isLoading) ...[
           // Stats skeleton
           Padding(
@@ -95,25 +99,6 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
               ],
             ),
           ),
-          // Pending section skeleton
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
-            padding: const EdgeInsets.all(AppSpacing.md),
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: const [AppShadows.card],
-            ),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ShimmerBox(width: 160, height: 18, radius: 6),
-                SizedBox(height: AppSpacing.md),
-                AdminListSkeleton(count: 3),
-              ],
-            ),
-          ),
-          const SizedBox(height: AppSpacing.md),
           // Activity feed skeleton
           Container(
             margin: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
@@ -134,7 +119,6 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
           ),
         ] else ...[
           _buildStatsGrid(colorScheme),
-          _buildPendingSection(context, colorScheme),
           _buildActivityFeed(colorScheme),
         ],
         const SizedBox(height: AppSpacing.xxl),
@@ -143,7 +127,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
   }
 
   //  Header ------------
-  Widget _buildHeader(ColorScheme colorScheme) {
+  Widget _buildHeader(ColorScheme colorScheme, AppUser? user) {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -156,7 +140,11 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
         ),
       ),
       padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xl),
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.lg,
+        AppSpacing.xl,
+      ),
       child: SafeArea(
         bottom: false,
         child: Column(
@@ -165,8 +153,10 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
             Row(
               children: [
                 Container(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
@@ -174,9 +164,10 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                   child: const Text(
                     '🛡️ System Administrator',
                     style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ],
@@ -185,13 +176,14 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
             const Text(
               'Admin Dashboard',
               style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white),
+                fontSize: 26,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
             const SizedBox(height: 4),
             Text(
-              'RUET ${ref.watch(currentUserProvider).department} Department',
+              'RUET ${user?.department ?? ''} Department',
               style: const TextStyle(fontSize: 14, color: Colors.white70),
             ),
           ],
@@ -202,112 +194,115 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
 
   //  Stats Grid -----------
   Widget _buildStatsGrid(ColorScheme colorScheme) {
-    final stats = [
-      {
-        'icon': Icons.group_rounded,
-        'label': 'Total Students',
-        'value': '856',
-        'sub': '+12 this week',
-        'color': Colors.blue,
-      },
-      {
-        'icon': Icons.manage_accounts_rounded,
-        'label': 'Active CRs',
-        'value': '12',
-        'sub': '4 sections',
-        'color': Colors.green,
-      },
-      {
-        'icon': Icons.event_note_rounded,
-        'label': 'Total Schedules',
-        'value': '45',
-        'sub': '3 pending',
-        'color': Colors.purple,
-      },
-      {
-        'icon': Icons.campaign_rounded,
-        'label': 'Total Notices',
-        'value': '28',
-        'sub': '2 pending',
-        'color': Colors.orange,
-      },
-    ];
-
-    return Padding(
-      padding: const EdgeInsets.all(AppSpacing.md),
-      child: GridView.builder(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: AppSpacing.md,
-          mainAxisSpacing: AppSpacing.md,
-          childAspectRatio: 2.2,
-        ),
-        itemCount: stats.length,
-        itemBuilder: (context, index) {
-          final stat = stats[index];
-          final color = stat['color'] as Color;
-          return Container(
-            decoration: BoxDecoration(
-              color: colorScheme.surface,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: const [AppShadows.card],
-            ),
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child:
-                  Icon(stat['icon'] as IconData, color: color, size: 22),
-                ),
-                const SizedBox(width: AppSpacing.sm),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        stat['value'] as String,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                      Text(
-                        stat['label'] as String,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        stat['sub'] as String,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: color,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+    return StreamBuilder<Map<String, int>>(
+      stream: FirestoreService().getUserStats(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Padding(
+            padding: EdgeInsets.all(AppSpacing.md),
+            child: StatsCardSkeleton(),
           );
-        },
-      ),
+        }
+        final data = snapshot.data!;
+        final stats = [
+          {
+            'icon': Icons.group_rounded,
+            'label': 'Total Students',
+            'value': data['students'].toString(),
+            'color': Colors.blue,
+          },
+          {
+            'icon': Icons.manage_accounts_rounded,
+            'label': 'Active CRs',
+            'value': data['cr'].toString(),
+            'color': Colors.green,
+          },
+          {
+            'icon': Icons.admin_panel_settings,
+            'label': 'Admins',
+            'value': data['admin'].toString(),
+            'color': Colors.purple,
+          },
+          {
+            'icon': Icons.people,
+            'label': 'Total Users',
+            'value': data['total'].toString(),
+            'color': Colors.orange,
+          },
+        ];
+
+        return Padding(
+          padding: const EdgeInsets.all(AppSpacing.md),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: AppSpacing.md,
+              mainAxisSpacing: AppSpacing.md,
+              childAspectRatio: 2.2,
+            ),
+            itemCount: stats.length,
+            itemBuilder: (context, index) {
+              final stat = stats[index];
+              final color = stat['color'] as Color;
+              return Container(
+                decoration: BoxDecoration(
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: const [AppShadows.card],
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.md,
+                  vertical: AppSpacing.sm,
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: color.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        stat['icon'] as IconData,
+                        color: color,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            stat['value'] as String,
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+                          Text(
+                            stat['label'] as String,
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 
@@ -327,28 +322,39 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
             padding: const EdgeInsets.all(AppSpacing.md),
             child: Row(
               children: [
-                const Icon(Icons.pending_actions_rounded,
-                    color: Colors.orange, size: 20),
+                const Icon(
+                  Icons.pending_actions_rounded,
+                  color: Colors.orange,
+                  size: 20,
+                ),
                 const SizedBox(width: AppSpacing.sm),
-                Text('Pending Approvals',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: colorScheme.onSurface)),
+                Text(
+                  'Pending Approvals',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
                 const Spacer(),
                 if (_pending.isNotEmpty)
                   Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.orange.withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Text('${_pending.length}',
-                        style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.orange)),
+                    child: Text(
+                      '${_pending.length}',
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.orange,
+                      ),
+                    ),
                   ),
               ],
             ),
@@ -366,7 +372,7 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
           else
             ...List.generate(
               _pending.length,
-                  (index) => _buildPendingItem(_pending[index], index, colorScheme),
+              (index) => _buildPendingItem(_pending[index], index, colorScheme),
             ),
         ],
       ),
@@ -374,10 +380,14 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
   }
 
   Widget _buildPendingItem(
-      Map<String, dynamic> item, int index, ColorScheme colorScheme) {
+    Map<String, dynamic> item,
+    int index,
+    ColorScheme colorScheme,
+  ) {
     final isSchedule = item['type'] == 'SCHEDULE';
-    final typeColor =
-    isSchedule ? colorScheme.primary : const Color(0xFFFF9800);
+    final typeColor = isSchedule
+        ? colorScheme.primary
+        : const Color(0xFFFF9800);
 
     return Container(
       margin: const EdgeInsets.all(AppSpacing.sm),
@@ -392,33 +402,43 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
           Row(
             children: [
               Container(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: typeColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: Text(item['type'],
-                    style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                        color: typeColor)),
+                child: Text(
+                  item['type'],
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: typeColor,
+                  ),
+                ),
               ),
               const Spacer(),
-              Text(item['time'],
-                  style: TextStyle(
-                      fontSize: 11, color: colorScheme.onSurfaceVariant)),
+              Text(
+                item['time'],
+                style: TextStyle(
+                  fontSize: 11,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.xs),
-          Text(item['title'],
-              style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: colorScheme.onSurface)),
-          Text('By: ${item['by']}',
-              style: TextStyle(
-                  fontSize: 12, color: colorScheme.onSurfaceVariant)),
+          Text(
+            item['title'],
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          Text(
+            'By: ${item['by']}',
+            style: TextStyle(fontSize: 12, color: colorScheme.onSurfaceVariant),
+          ),
           const SizedBox(height: AppSpacing.sm),
           Row(
             children: [
@@ -432,7 +452,8 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                     side: BorderSide(color: colorScheme.error),
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
               ),
@@ -446,7 +467,8 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
                     backgroundColor: Colors.green,
                     padding: const EdgeInsets.symmetric(vertical: 6),
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
                 ),
               ),
@@ -506,36 +528,52 @@ class _AdminDashboardScreenState extends ConsumerState<AdminDashboardScreen> {
             padding: const EdgeInsets.all(AppSpacing.md),
             child: Row(
               children: [
-                Icon(Icons.history_rounded,
-                    color: colorScheme.primary, size: 20),
+                Icon(
+                  Icons.history_rounded,
+                  color: colorScheme.primary,
+                  size: 20,
+                ),
                 const SizedBox(width: AppSpacing.sm),
-                Text('Recent Activity',
-                    style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: colorScheme.onSurface)),
+                Text(
+                  'Recent Activity',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
               ],
             ),
           ),
           const Divider(height: 1),
-          ...activities.map((a) => ListTile(
-            leading: Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: (a['color'] as Color).withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(12),
+          ...activities.map(
+            (a) => ListTile(
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  color: (a['color'] as Color).withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  a['icon'] as IconData,
+                  color: a['color'] as Color,
+                  size: 20,
+                ),
               ),
-              child: Icon(a['icon'] as IconData,
-                  color: a['color'] as Color, size: 20),
-            ),
-            title: Text(a['msg'] as String,
-                style: const TextStyle(fontSize: 13)),
-            subtitle: Text(a['time'] as String,
+              title: Text(
+                a['msg'] as String,
+                style: const TextStyle(fontSize: 13),
+              ),
+              subtitle: Text(
+                a['time'] as String,
                 style: TextStyle(
-                    fontSize: 11,
-                    color: colorScheme.onSurfaceVariant)),
-          )),
+                  fontSize: 11,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ),
           const SizedBox(height: AppSpacing.xs),
         ],
       ),
